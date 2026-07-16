@@ -6,7 +6,7 @@
 <title>Release Planner</title>
 <style>
   html, body, #root { height: 100%; margin: 0; }
-  body { background: #acb3cf; }
+  body { background: #EEF2F0; }
 </style>
 </head>
 <body>
@@ -74,7 +74,7 @@ const DEFAULT_CHECKLIST = {
     ["Initiate Project Journal", ""],
     ["Prepare Risk Assessment", "QR707A — document can be started early, but review periodically through the project"],
     ["Create Work Breakdown Structure (WBS) for project", ""],
-    ["Project Kick Off-", ""],
+    ["Project Kick Off ", ""],
   ],
   Beta: [
     ["Prepare the Beta Release Document", "PR707D — itself a checklist; prepare early so release cards are set up properly"],
@@ -293,7 +293,7 @@ function Dashboard({ projects, onOpen, onCreate, onDelete }) {
           <div className="eyebrow">Release Planner</div>
           <h1 className="dash__title">Project bench</h1>
           <p className="dash__sub">
-            Charter, validate, and ship. Every project moves through the same four gates.
+            Charter, validate, and ship. Every project moves through the same four (4) gates.
           </p>
         </div>
         <button className="btn btn--primary" onClick={() => setCreating(true)}>
