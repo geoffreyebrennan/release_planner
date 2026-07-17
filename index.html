@@ -6,7 +6,7 @@
 <title>Release Planner</title>
 <style>
   html, body, #root { height: 100%; margin: 0; }
-  body { background: #9dbae6; }
+  body { background: #EEF2F0; }
 </style>
 </head>
 <body>
@@ -43,7 +43,7 @@ function LinkIcon(props) { return <Icon {...props}><path d="M10 13a5 5 0 0 0 7.0
    CONSTANTS — derived from the source planning template
 --------------------------------------------------------- */
 
-const TEAMS = [
+const DEFAULT_TEAMS = [
   "None", "Unassigned", "Architecture", "BI/Reporting", "Internal Development",
   "Clinical", "Finance", "Integration", "Insurance", "Patient", "Slams", "Curve Capture",
 ];
@@ -129,11 +129,11 @@ function freshChecklist() {
   return out;
 }
 
-function freshProject(name) {
+function freshProject(name, defaultTeam) {
   return {
     id: uid(),
     name: name || "Untitled project",
-    team: "Unassigned",
+    team: defaultTeam || "Unassigned",
     status: "Unreleased",
     size: "M",
     priority: 3,
@@ -155,9 +155,9 @@ function freshProject(name) {
    STORAGE
 --------------------------------------------------------- */
 
-const STORAGE_KEY = "release-planner:projects";
+const STORAGE_KEY = "release-planner:data";
 
-async function loadProjects() {
+async function loadData() {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
@@ -167,9 +167,9 @@ async function loadProjects() {
   }
 }
 
-async function saveProjects(projects) {
+async function saveData(data) {
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch (e) {
     console.error("Save failed", e);
   }
@@ -279,12 +279,61 @@ function Select({ value, onChange, options }) {
 }
 
 /* ---------------------------------------------------------
+   TEAM MANAGER
+--------------------------------------------------------- */
+
+function TeamManager({ teams, onAdd, onRemove }) {
+  const [draft, setDraft] = useState("");
+
+  const submit = (e) => {
+    e.preventDefault();
+    const trimmed = draft.trim();
+    if (!trimmed) return;
+    onAdd(trimmed);
+    setDraft("");
+  };
+
+  return (
+    <div className="team-manager">
+      <div className="team-manager__list">
+        {teams.length === 0 && <span className="team-manager__empty">No teams yet.</span>}
+        {teams.map((t) => (
+          <span className="team-chip" key={t}>
+            {t}
+            <button
+              type="button"
+              className="team-chip__remove"
+              title={`Remove ${t}`}
+              onClick={() => onRemove(t)}
+            >
+              <X size={11} />
+            </button>
+          </span>
+        ))}
+      </div>
+      <form className="team-manager__add" onSubmit={submit}>
+        <input
+          className="team-manager__input"
+          placeholder="Add a team…"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+        />
+        <button className="btn btn--small" type="submit">
+          <Plus size={12} /> Add
+        </button>
+      </form>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------
    DASHBOARD
 --------------------------------------------------------- */
 
-function Dashboard({ projects, onOpen, onCreate, onDelete }) {
+function Dashboard({ projects, teams, onOpen, onCreate, onDelete, onAddTeam, onRemoveTeam }) {
   const [draftName, setDraftName] = useState("");
   const [creating, setCreating] = useState(false);
+  const [managingTeams, setManagingTeams] = useState(false);
 
   return (
     <div className="dash">
@@ -296,10 +345,19 @@ function Dashboard({ projects, onOpen, onCreate, onDelete }) {
             Charter, validate, and ship. Every project moves through the same four gates.
           </p>
         </div>
-        <button className="btn btn--primary" onClick={() => setCreating(true)}>
-          <Plus size={16} strokeWidth={2.5} /> New project
-        </button>
+        <div className="dash__header-actions">
+          <button className="btn btn--ghost" onClick={() => setManagingTeams((v) => !v)}>
+            {managingTeams ? "Done" : "Manage teams"}
+          </button>
+          <button className="btn btn--primary" onClick={() => setCreating(true)}>
+            <Plus size={16} strokeWidth={2.5} /> New project
+          </button>
+        </div>
       </header>
+
+      {managingTeams && (
+        <TeamManager teams={teams} onAdd={onAddTeam} onRemove={onRemoveTeam} />
+      )}
 
       {creating && (
         <form
@@ -379,7 +437,7 @@ function Dashboard({ projects, onOpen, onCreate, onDelete }) {
 
 const TABS = ["Poster", "Discovery", "North Star", "Checklist"];
 
-function ProjectDetail({ project, onChange, onBack }) {
+function ProjectDetail({ project, teams, onChange, onBack }) {
   const [tab, setTab] = useState("Poster");
 
   const update = (patch) => {
@@ -388,6 +446,8 @@ function ProjectDetail({ project, onChange, onBack }) {
   const updatePoster = (key, value) => {
     update({ poster: { ...project.poster, [key]: value } });
   };
+
+  const teamOptions = teams.includes(project.team) ? teams : [project.team, ...teams];
 
   return (
     <div className="detail">
@@ -404,7 +464,7 @@ function ProjectDetail({ project, onChange, onBack }) {
 
         <div className="rail-row">
           <label className="rail-label">Team</label>
-          <Select value={project.team} onChange={(v) => update({ team: v })} options={TEAMS} />
+          <Select value={project.team} onChange={(v) => update({ team: v })} options={teamOptions} />
         </div>
         <div className="rail-row">
           <label className="rail-label">Status</label>
@@ -654,6 +714,7 @@ function ChecklistTab({ checklist, onChange }) {
 
 function App() {
   const [projects, setProjects] = useState([]);
+  const [teams, setTeams] = useState(DEFAULT_TEAMS);
   const [openId, setOpenId] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [status, setStatus] = useState("");
@@ -661,8 +722,11 @@ function App() {
 
   useEffect(() => {
     (async () => {
-      const data = await loadProjects();
-      if (data) setProjects(data);
+      const data = await loadData();
+      if (data) {
+        if (data.projects) setProjects(data.projects);
+        if (data.teams) setTeams(data.teams);
+      }
       setLoaded(true);
     })();
   }, []);
@@ -672,16 +736,16 @@ function App() {
     setStatus("Saving…");
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(async () => {
-      await saveProjects(projects);
+      await saveData({ projects, teams });
       setStatus("Saved");
       setTimeout(() => setStatus(""), 1200);
     }, 500);
     return () => clearTimeout(saveTimer.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projects, loaded]);
+  }, [projects, teams, loaded]);
 
   const createProject = (name) => {
-    const p = freshProject(name);
+    const p = freshProject(name, teams[0]);
     setProjects((prev) => [p, ...prev]);
     setOpenId(p.id);
   };
@@ -691,6 +755,12 @@ function App() {
   };
   const updateProject = (updated) => {
     setProjects((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+  };
+  const addTeam = (name) => {
+    setTeams((prev) => (prev.includes(name) ? prev : [...prev, name]));
+  };
+  const removeTeam = (name) => {
+    setTeams((prev) => prev.filter((t) => t !== name));
   };
 
   const openProject = projects.find((p) => p.id === openId);
@@ -748,6 +818,36 @@ function App() {
         }
         .dash__title { font-size: clamp(28px, 4vw, 40px); font-weight: 600; margin: 0 0 6px; }
         .dash__sub { color: var(--ink-faint); margin: 0; max-width: 46ch; font-size: 14px; }
+        .dash__header-actions { display: flex; align-items: center; gap: 8px; }
+
+        .team-manager {
+          border: 1px solid var(--hairline); border-radius: 12px;
+          padding: 16px 18px; background: var(--surface);
+          margin-bottom: 24px;
+          display: flex; flex-direction: column; gap: 12px;
+        }
+        .team-manager__list { display: flex; flex-wrap: wrap; gap: 8px; }
+        .team-manager__empty { font-size: 13px; color: var(--ink-faint); }
+        .team-chip {
+          display: inline-flex; align-items: center; gap: 6px;
+          font-size: 12px; font-family: 'IBM Plex Mono', monospace;
+          padding: 5px 6px 5px 10px; border-radius: 100px;
+          background: var(--canvas); color: var(--ink);
+          border: 1px solid var(--hairline);
+        }
+        .team-chip__remove {
+          border: none; background: transparent; color: var(--ink-faint);
+          cursor: pointer; display: flex; align-items: center;
+          padding: 2px; border-radius: 50%;
+        }
+        .team-chip__remove:hover { color: var(--brick); background: rgba(166,67,47,0.1); }
+        .team-manager__add { display: flex; gap: 8px; }
+        .team-manager__input {
+          flex: 1; max-width: 260px;
+          padding: 7px 10px; border-radius: 8px;
+          border: 1px solid var(--hairline); background: var(--canvas);
+          font-family: inherit; font-size: 13px; color: var(--ink);
+        }
 
         .btn {
           display: inline-flex; align-items: center; gap: 6px;
@@ -992,13 +1092,17 @@ function App() {
       {!openProject ? (
         <Dashboard
           projects={projects}
+          teams={teams}
           onOpen={setOpenId}
           onCreate={createProject}
           onDelete={deleteProject}
+          onAddTeam={addTeam}
+          onRemoveTeam={removeTeam}
         />
       ) : (
         <ProjectDetail
           project={openProject}
+          teams={teams}
           onChange={updateProject}
           onBack={() => setOpenId(null)}
         />
