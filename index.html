@@ -819,7 +819,7 @@ function ApiKeyBar({ apiKey, onChange }) {
       <button className="btn btn--primary btn--small" type="submit">Save</button>
       <span className="api-key-bar__hint">
         Stored only in your browser and sent directly to Anthropic. Needed to power the
-        conversational agents on this page.
+        conversational agents on this page. To generate a key visit <a href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer">Anthropic Console</a>.
       </span>
     </form>
   );
@@ -1140,11 +1140,11 @@ function ProjectDetail({ project, teams, onChange, onBack, apiKey }) {
 function PosterTab({ poster, onChange, project, chat, onChatChange, onSynthesize, apiKey }) {
   const rows = [
     ["winningDeliverable", "What a winning deliverable looks like to a customer", "The elevator pitch. This is the project vision."],
-    ["problemStatement", "What problem are we solving?", ""],
+    ["problemStatement", "What problem are we solving?", "This is the customer problem, not the solution. Keep it short and specific."],
     ["strategyFit", "How does this project fit with our strategy?", "Tie the project to a broader theme."],
-    ["themeTie", "Does this project tie to a theme?", ""],
+    ["themeTie", "Does this project tie to a theme?", "Are there parent initiatives or other projects that this is a part of?"],
     ["whyImportant", "Why are we doing this?", "Impact on customers and business. What's the unfair advantage?"],
-    ["whyNow", "Why are we doing this now?", ""],
+    ["whyNow", "Why are we doing this now?", "Is it time-sensitive? Is there a market opportunity?"],
     ["successMetrics", "What are our metrics of success?", "Needs to be specific and measurable before moving into build."],
     ["constraints", "What are the project constraints?", "What won't this feature do?"],
     ["whatWeKnow", "What do we already know?", "Data or insight that validates this."],
