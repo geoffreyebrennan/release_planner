@@ -173,8 +173,36 @@ function applyChecklistStatuses(checklist, statusesByPhase) {
 // `chats` field yet. Fill it in on load so older saved data doesn't crash
 // the new UI.
 function normalizeProject(p) {
-  if (p.chats) return p;
-  return { ...p, chats: { Brief: [], FiveWhys: [], Jtbd: [], NorthStar: [] } };
+  // Handles data saved by earlier versions of this app:
+  //  - pre-agent projects had no `chats` field at all
+  //  - projects saved between the agent feature and the Poster->Brief
+  //    rename have `poster` (not `brief`) and `chats.Poster` (not
+  //    `chats.Brief`)
+  // Without this, an old project's `brief` is undefined and the Brief
+  // tab crashes trying to read fields off it.
+  const brief =
+    p.brief ||
+    p.poster || {
+      winningDeliverable: "",
+      problemStatement: "",
+      strategyFit: "",
+      themeTie: "",
+      whyImportant: "",
+      whyNow: "",
+      successMetrics: "",
+      constraints: "",
+      whatWeKnow: "",
+      whatWeNeedToAnswer: "",
+    };
+  const oldChats = p.chats || {};
+  const chats = {
+    Brief: oldChats.Brief || oldChats.Poster || [],
+    FiveWhys: oldChats.FiveWhys || [],
+    Jtbd: oldChats.Jtbd || [],
+    NorthStar: oldChats.NorthStar || [],
+  };
+  const { poster, ...rest } = p;
+  return { ...rest, brief, chats };
 }
 
 /* ---------------------------------------------------------
