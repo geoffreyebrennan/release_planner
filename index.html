@@ -142,7 +142,7 @@ function freshProject(name, defaultTeam) {
     priority: 3,
     createdAt: Date.now(),
     updatedAt: Date.now(),
-    poster: {
+    One-pager: {
       winningDeliverable: "", problemStatement: "", strategyFit: "", themeTie: "",
       whyImportant: "", whyNow: "", successMetrics: "", constraints: "",
       whatWeKnow: "", whatWeNeedToAnswer: "",
@@ -151,7 +151,7 @@ function freshProject(name, defaultTeam) {
     jtbd: [],
     northStar: "",
     checklist: freshChecklist(),
-    chats: { Poster: [], FiveWhys: [], Jtbd: [], NorthStar: [] },
+    chats: { One-pager: [], FiveWhys: [], Jtbd: [], NorthStar: [] },
   };
 }
 
@@ -172,7 +172,7 @@ function applyChecklistStatuses(checklist, statusesByPhase) {
 // the new UI.
 function normalizeProject(p) {
   if (p.chats) return p;
-  return { ...p, chats: { Poster: [], FiveWhys: [], Jtbd: [], NorthStar: [] } };
+  return { ...p, chats: { One-pager: [], FiveWhys: [], Jtbd: [], NorthStar: [] } };
 }
 
 /* ---------------------------------------------------------
@@ -194,7 +194,7 @@ function demoProjects() {
     priority: 4,
     createdAt: now - 34 * day,
     updatedAt: now - 1 * day,
-    poster: {
+    One-pager: {
       winningDeliverable: "A patient can pull their glucose curve history into any care app they already use, without a support ticket.",
       problemStatement: "Clinics and third-party apps keep asking for raw curve data, and today the only path is a manual export the patient has to request from support.",
       strategyFit: "Opens the platform to the broader care ecosystem, which is one of this year's stated themes.",
@@ -236,7 +236,7 @@ function demoProjects() {
       Close: [],
     }),
     chats: {
-      Poster: [
+      One-pager: [
         { id: uid(), role: "user", text: "We want to let patients export their glucose curve history to other apps." },
         { id: uid(), role: "assistant", text: "Good starting point. Who actually asks for this today, patients directly, or their clinics? And what do they currently have to do to get that data out?" },
         { id: uid(), role: "user", text: "Mostly clinics, on behalf of patients. Right now it's a manual support ticket." },
@@ -256,7 +256,7 @@ function demoProjects() {
     priority: 3,
     createdAt: now - 9 * day,
     updatedAt: now - 5 * 3600000,
-    poster: {
+    One-pager: {
       winningDeliverable: "A single daily email that tells a care team exactly which patients need attention today, and why.",
       problemStatement: "Care teams currently check each patient's dashboard individually to spot who needs follow-up, which doesn't scale past a small caseload.",
       strategyFit: "Supports the Clinical Efficiency theme by reducing per-patient manual review time.",
@@ -297,7 +297,7 @@ function demoProjects() {
       GA: [],
       Close: [],
     }),
-    chats: { Poster: [], FiveWhys: [], Jtbd: [], NorthStar: [] },
+    chats: { One-pager: [], FiveWhys: [], Jtbd: [], NorthStar: [] },
   };
 
   return [curveExport, alertDigest];
@@ -329,7 +329,7 @@ async function saveData(data) {
 
 /* ---------------------------------------------------------
    AI CONVERSATION LAYER
-   Each framework (Poster, 5 Whys, JTBD, North Star) has its own
+   Each framework (One-pager, 5 Whys, JTBD, North Star) has its own
    guided chat. callClaude() talks to the Anthropic Messages API —
    in this Claude-hosted build no API key is needed. A parallel
    standalone build (for hosting outside Claude.ai) swaps this
@@ -390,10 +390,10 @@ async function callClaude(messages, system, apiKey) {
 }
 
 const FRAMEWORK_PROMPTS = {
-  Poster: {
-    label: "Poster",
-    intro: "Answer a few questions and Claude will draft the poster fields for you.",
-    system: `You are a sharp, friendly product management coach helping someone fill out a one-page Project Poster before they start building. The poster covers: what a winning deliverable looks like to a customer, the problem being solved, how it fits company strategy, whether it ties to a theme, why it matters, why now, success metrics, constraints, what's already known, and what still needs to be answered.
+  One-pager: {
+    label: "One-pager",
+    intro: "Answer a few questions and Claude will draft the One-pager fields for you.",
+    system: `You are a sharp, friendly product management coach helping someone fill out a one-page Project One-pager before they start building. The One-pager covers: what a winning deliverable looks like to a customer, the problem being solved, how it fits company strategy, whether it ties to a theme, why it matters, why now, success metrics, constraints, what's already known, and what still needs to be answered.
 
 Ask ONE focused question at a time, in plain conversational language, building on what they've already told you rather than repeating yourself. Push gently for specifics when an answer is vague (e.g. push "improve engagement" toward a number or a concrete behavior change). After you've covered the key facets, tell them they can hit "Synthesize into fields" whenever they're ready, and offer to keep going if they want to add more detail. Keep responses short, a few sentences at most.`,
     extractionSystem: `You extract structured data from a product planning conversation. Given the conversation so far, output ONLY a single valid JSON object with exactly these string keys: winningDeliverable, problemStatement, strategyFit, themeTie, whyImportant, whyNow, successMetrics, constraints, whatWeKnow, whatWeNeedToAnswer. Write each value as a concise, well-formed sentence or two in the user's voice, based only on what was actually discussed. Use an empty string for anything not yet discussed. Do not include markdown formatting, code fences, or any text outside the JSON object.`,
@@ -462,7 +462,7 @@ function relativeTime(ts) {
 
 /* ---------------------------------------------------------
    PROJECT CHARTER EXPORT
-   Synthesizes the poster, discovery, north star, and checklist
+   Synthesizes the One-pager, discovery, north star, and checklist
    into a single document and downloads it as a Word-compatible
    .doc file. No external service or library involved — the
    person can then save that file to Drive, Notion, or anywhere
@@ -480,7 +480,7 @@ function checklistCompletion(items) {
 }
 
 function buildCharterHtml(project) {
-  const p = project.poster;
+  const p = project.One-pager;
   const fw = project.fiveWhys;
 
   const checklistRows = PHASES.map((phase) => {
@@ -543,7 +543,7 @@ function buildCharterHtml(project) {
     Generated ${new Date().toLocaleDateString()}
   </div>
 
-  <h2>Project Poster</h2>
+  <h2>Project One-pager</h2>
   ${field("What a winning deliverable looks like", p.winningDeliverable)}
   ${field("Problem statement", p.problemStatement)}
   ${field("Strategy fit", p.strategyFit)}
@@ -661,7 +661,7 @@ function Select({ value, onChange, options }) {
 
 /* ---------------------------------------------------------
    AGENT CHAT PANEL
-   Shared UI for the four guided-conversation agents (Poster,
+   Shared UI for the four guided-conversation agents (One-pager,
    5 Whys, JTBD, North Star). Chat freely, then hit "Synthesize
    into fields" whenever ready — the fields on the other side of
    the tab stay directly editable regardless.
@@ -982,10 +982,10 @@ function Dashboard({ projects, teams, onOpen, onCreate, onDelete, onAddTeam, onR
    PROJECT DETAIL — TABS
 --------------------------------------------------------- */
 
-const TABS = ["Poster", "Discovery", "North Star", "Checklist"];
+const TABS = ["One-pager", "Discovery", "North Star", "Checklist"];
 
 function ProjectDetail({ project, teams, onChange, onBack, apiKey }) {
-  const [tab, setTab] = useState("Poster");
+  const [tab, setTab] = useState("One-pager");
 
   // update() accepts a plain patch object (safe for simple, synchronous field
   // edits) or a function of (previousProject) => patch (required for anything
@@ -994,16 +994,16 @@ function ProjectDetail({ project, teams, onChange, onBack, apiKey }) {
   const update = (patch) => {
     onChange(patch);
   };
-  const updatePoster = (key, value) => {
-    update({ poster: { ...project.poster, [key]: value } });
+  const updateOne-pager = (key, value) => {
+    update({ One-pager: { ...project.One-pager, [key]: value } });
   };
-  const mergePoster = (patch) => {
+  const mergeOne-pager = (patch) => {
     update((prev) => {
-      const next = { ...prev.poster };
+      const next = { ...prev.One-pager };
       Object.keys(patch || {}).forEach((k) => {
         if (patch[k]) next[k] = patch[k];
       });
-      return { poster: next };
+      return { One-pager: next };
     });
   };
   const mergeFiveWhys = (patch) => {
@@ -1093,14 +1093,14 @@ function ProjectDetail({ project, teams, onChange, onBack, apiKey }) {
           ))}
         </div>
 
-        {tab === "Poster" && (
-          <PosterTab
-            poster={project.poster}
-            onChange={updatePoster}
+        {tab === "One-pager" && (
+          <One-pagerTab
+            One-pager={project.One-pager}
+            onChange={updateOne-pager}
             project={project}
-            chat={project.chats.Poster}
-            onChatChange={(conv) => setChat("Poster", conv)}
-            onSynthesize={mergePoster}
+            chat={project.chats.One-pager}
+            onChatChange={(conv) => setChat("One-pager", conv)}
+            onSynthesize={mergeOne-pager}
             apiKey={apiKey}
           />
         )}
@@ -1137,7 +1137,7 @@ function ProjectDetail({ project, teams, onChange, onBack, apiKey }) {
   );
 }
 
-function PosterTab({ poster, onChange, project, chat, onChatChange, onSynthesize, apiKey }) {
+function One-pagerTab({ One-pager, onChange, project, chat, onChatChange, onSynthesize, apiKey }) {
   const rows = [
     ["winningDeliverable", "What a winning deliverable looks like to a customer", "The elevator pitch. This is the project vision."],
     ["problemStatement", "What problem are we solving?", "This is the customer problem, not the solution. Keep it short and specific."],
@@ -1152,9 +1152,9 @@ function PosterTab({ poster, onChange, project, chat, onChatChange, onSynthesize
   ];
   return (
     <div className="panel">
-      <div className="poster-toolbar">
-        <div className="poster-toolbar__hint">
-          Pulls the poster, discovery notes, north star, and checklist status into one document.
+      <div className="One-pager-toolbar">
+        <div className="One-pager-toolbar__hint">
+          Pulls the One-pager, discovery notes, north star, and checklist status into one document.
         </div>
         <button className="btn btn--primary" onClick={() => downloadCharter(project)}>
           <Download size={14} /> Download as Word doc
@@ -1162,16 +1162,16 @@ function PosterTab({ poster, onChange, project, chat, onChatChange, onSynthesize
       </div>
       <div className="split-panel">
         <AgentChatPanel
-          frameworkKey="Poster"
+          frameworkKey="One-pager"
           conversation={chat}
           onConversationChange={onChatChange}
           onSynthesize={onSynthesize}
           apiKey={apiKey}
         />
-        <div className="poster-grid">
+        <div className="One-pager-grid">
           {rows.map(([key, label, hint]) => (
             <Field key={key} label={label} hint={hint}>
-              <TextArea value={poster[key]} onChange={(e) => onChange(key, e.target.value)} />
+              <TextArea value={One-pager[key]} onChange={(e) => onChange(key, e.target.value)} />
             </Field>
           ))}
         </div>
@@ -1707,15 +1707,15 @@ function App() {
         .tabbar__item[data-active="true"] { color: var(--ink); border-bottom-color: var(--teal); }
 
         .panel { display: flex; flex-direction: column; gap: 20px; }
-        .poster-toolbar {
+        .One-pager-toolbar {
           display: flex; align-items: center; justify-content: space-between; gap: 16px;
           flex-wrap: wrap;
           border: 1px solid var(--hairline); border-radius: 12px;
           padding: 14px 16px; background: var(--surface);
         }
-        .poster-toolbar__hint { font-size: 12.5px; color: var(--ink-faint); max-width: 46ch; }
-        .poster-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
-        @media (max-width: 700px) { .poster-grid { grid-template-columns: 1fr; } }
+        .One-pager-toolbar__hint { font-size: 12.5px; color: var(--ink-faint); max-width: 46ch; }
+        .One-pager-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
+        @media (max-width: 700px) { .One-pager-grid { grid-template-columns: 1fr; } }
         .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 
         /* ---------- agent chat ---------- */
