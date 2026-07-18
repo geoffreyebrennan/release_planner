@@ -37,6 +37,9 @@ function ChevronLeft(props) { return <Icon {...props}><polyline points="15 18 9 
 function Trash2(props) { return <Icon {...props}><polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" /></Icon>; }
 function X(props) { return <Icon {...props}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></Icon>; }
 function LinkIcon(props) { return <Icon {...props}><path d="M10 13a5 5 0 0 0 7.07 0l1.93-1.93a5 5 0 0 0-7.07-7.07L10.5 5.5" /><path d="M14 11a5 5 0 0 0-7.07 0L4.99 12.93a5 5 0 0 0 7.07 7.07L13.5 18.5" /></Icon>; }
+function Download(props) { return <Icon {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></Icon>; }
+function Sparkles(props) { return <Icon {...props}><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8" /></Icon>; }
+function KeyRound(props) { return <Icon {...props}><circle cx="8" cy="15" r="4" /><path d="M10.5 12.5 19 4M17 6l2 2M14 9l2 2" /></Icon>; }
 
 
 /* ---------------------------------------------------------
@@ -148,7 +151,156 @@ function freshProject(name, defaultTeam) {
     jtbd: [],
     northStar: "",
     checklist: freshChecklist(),
+    chats: { Poster: [], FiveWhys: [], Jtbd: [], NorthStar: [] },
   };
+}
+
+function applyChecklistStatuses(checklist, statusesByPhase) {
+  const out = {};
+  PHASES.forEach((phase) => {
+    const statuses = statusesByPhase[phase] || [];
+    out[phase] = checklist[phase].map((item, i) => ({
+      ...item,
+      status: statuses[i] || item.status,
+    }));
+  });
+  return out;
+}
+
+// Projects saved before the conversational agents existed won't have a
+// `chats` field yet. Fill it in on load so older saved data doesn't crash
+// the new UI.
+function normalizeProject(p) {
+  if (p.chats) return p;
+  return { ...p, chats: { Poster: [], FiveWhys: [], Jtbd: [], NorthStar: [] } };
+}
+
+/* ---------------------------------------------------------
+   DEMO DATA — seeds first-time visitors with two example
+   projects at different gate stages, so the tool isn't a
+   blank page. Fully editable and deletable like any project.
+--------------------------------------------------------- */
+
+function demoProjects() {
+  const day = 86400000;
+  const now = Date.now();
+
+  const curveExport = {
+    id: uid(),
+    name: "Example: CGM Curve Export API",
+    team: "Curve Capture",
+    status: "In Beta",
+    size: "L",
+    priority: 4,
+    createdAt: now - 34 * day,
+    updatedAt: now - 1 * day,
+    poster: {
+      winningDeliverable: "A patient can pull their glucose curve history into any care app they already use, without a support ticket.",
+      problemStatement: "Clinics and third-party apps keep asking for raw curve data, and today the only path is a manual export the patient has to request from support.",
+      strategyFit: "Opens the platform to the broader care ecosystem, which is one of this year's stated themes.",
+      themeTie: "Yes — Open Platform theme.",
+      whyImportant: "Removes a recurring support burden and unblocks two partner integrations that are currently stalled.",
+      whyNow: "Two partner deals are contractually waiting on this API before they'll sign.",
+      successMetrics: "80% reduction in manual export tickets within one quarter of GA. At least 5 partner integrations live within two quarters.",
+      constraints: "Read-only for v1. No write-back to the device record. Must stay within existing rate limits.",
+      whatWeKnow: "Support logs 40-60 manual export requests a month. Partner teams have already scoped their side against our draft schema.",
+      whatWeNeedToAnswer: "Whether historical data older than 12 months needs to be included in v1, or can follow later.",
+    },
+    fiveWhys: {
+      problem: "Why do patients want their curve data outside the app?",
+      whys: [
+        "Because their care team uses a separate dashboard that doesn't talk to us.",
+        "Because that dashboard is where the clinic already reviews all their other vitals.",
+        "Because switching context between two apps during a visit wastes appointment time.",
+        "Because appointment time is short and the clinician wants one screen, not two.",
+        "Because ultimately the patient just wants their care team to have the full picture without extra steps on anyone's part.",
+      ],
+      rootCause: "Curve data is trapped in a single app when care actually happens across several systems at once.",
+      opportunity: "Let the data follow the patient into whatever system their care team already trusts.",
+    },
+    jtbd: [
+      {
+        id: uid(),
+        situation: "I'm a clinic administrator setting up a new patient in our EHR",
+        motivation: "pull in their existing curve history automatically",
+        outcome: "I can review trends on day one instead of waiting weeks for new data to accumulate",
+        emotionalJob: "confident I'm not missing context on a new patient",
+        socialJob: "someone who runs a well-integrated, modern practice",
+      },
+    ],
+    northStar: "Every patient's curve history is available wherever their care actually happens, with zero manual export requests.",
+    checklist: applyChecklistStatuses(freshChecklist(), {
+      Charter: ["Done", "Done", "Done", "Done", "Done", "Done", "Done"],
+      Beta: ["Done", "Done", "Done", "Done", "Done", "Done", "In Progress", "In Progress", "In Progress", "Not started", "Not started", "Not started", "Not started", "Not started", "Not started", "Not started"],
+      GA: [],
+      Close: [],
+    }),
+    chats: {
+      Poster: [
+        { id: uid(), role: "user", text: "We want to let patients export their glucose curve history to other apps." },
+        { id: uid(), role: "assistant", text: "Good starting point. Who actually asks for this today, patients directly, or their clinics? And what do they currently have to do to get that data out?" },
+        { id: uid(), role: "user", text: "Mostly clinics, on behalf of patients. Right now it's a manual support ticket." },
+      ],
+      FiveWhys: [],
+      Jtbd: [],
+      NorthStar: [],
+    },
+  };
+
+  const alertDigest = {
+    id: uid(),
+    name: "Example: Care Team Alert Digest",
+    team: "Clinical",
+    status: "Unreleased",
+    size: "M",
+    priority: 3,
+    createdAt: now - 9 * day,
+    updatedAt: now - 5 * 3600000,
+    poster: {
+      winningDeliverable: "A single daily email that tells a care team exactly which patients need attention today, and why.",
+      problemStatement: "Care teams currently check each patient's dashboard individually to spot who needs follow-up, which doesn't scale past a small caseload.",
+      strategyFit: "Supports the Clinical Efficiency theme by reducing per-patient manual review time.",
+      themeTie: "Yes — Clinical Efficiency theme.",
+      whyImportant: "Larger clinics have told us caseload review is the single biggest time cost in their week.",
+      whyNow: "",
+      successMetrics: "Reduce average daily review time per care team by 30%, measured via in-app time tracking.",
+      constraints: "Email only for v1, no in-app inbox. Must respect existing notification preferences.",
+      whatWeKnow: "Interviews with 6 clinics all independently described the same manual triage process.",
+      whatWeNeedToAnswer: "How much history should factor into the daily prioritization, and whether that should be configurable per clinic.",
+    },
+    fiveWhys: {
+      problem: "Why does a care team check every patient dashboard individually?",
+      whys: [
+        "Because there's no single view that ranks patients by urgency.",
+        "Because urgency depends on several signals that live in different places today.",
+        "",
+        "",
+        "",
+      ],
+      rootCause: "",
+      opportunity: "",
+    },
+    jtbd: [
+      {
+        id: uid(),
+        situation: "I'm a care coordinator starting my morning",
+        motivation: "know immediately which of my patients need attention",
+        outcome: "spend my limited time on the people who actually need it",
+        emotionalJob: "in control instead of reactive",
+        socialJob: "someone my team can rely on to catch issues early",
+      },
+    ],
+    northStar: "",
+    checklist: applyChecklistStatuses(freshChecklist(), {
+      Charter: ["Done", "Done", "Done", "Done", "In Progress", "In Progress", "Not started"],
+      Beta: [],
+      GA: [],
+      Close: [],
+    }),
+    chats: { Poster: [], FiveWhys: [], Jtbd: [], NorthStar: [] },
+  };
+
+  return [curveExport, alertDigest];
 }
 
 /* ---------------------------------------------------------
@@ -173,6 +325,106 @@ async function saveData(data) {
   } catch (e) {
     console.error("Save failed", e);
   }
+}
+
+/* ---------------------------------------------------------
+   AI CONVERSATION LAYER
+   Each framework (Poster, 5 Whys, JTBD, North Star) has its own
+   guided chat. callClaude() talks to the Anthropic Messages API —
+   in this Claude-hosted build no API key is needed. A parallel
+   standalone build (for hosting outside Claude.ai) swaps this
+   for a version that uses a key the visitor supplies themselves.
+--------------------------------------------------------- */
+
+const NEEDS_API_KEY = true;
+const CLAUDE_MODEL = "claude-sonnet-4-6";
+const API_KEY_STORAGE = "release-planner:anthropic-key";
+
+function loadApiKey() {
+  try {
+    return window.localStorage.getItem(API_KEY_STORAGE) || "";
+  } catch (e) {
+    return "";
+  }
+}
+
+function saveApiKey(key) {
+  try {
+    window.localStorage.setItem(API_KEY_STORAGE, key);
+  } catch (e) {
+    // ignore
+  }
+}
+
+async function callClaude(messages, system, apiKey) {
+  const headers = { "Content-Type": "application/json" };
+  if (NEEDS_API_KEY) {
+    if (!apiKey) {
+      const err = new Error("Add your Anthropic API key above first.");
+      err.code = "MISSING_KEY";
+      throw err;
+    }
+    headers["x-api-key"] = apiKey;
+    headers["anthropic-version"] = "2023-06-01";
+    headers["anthropic-dangerous-direct-browser-access"] = "true";
+  }
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      model: CLAUDE_MODEL,
+      max_tokens: 1024,
+      system,
+      messages,
+    }),
+  });
+  if (!res.ok) {
+    const errText = await res.text().catch(() => "");
+    throw new Error(`Claude API error (${res.status}): ${errText.slice(0, 200)}`);
+  }
+  const data = await res.json();
+  return (data.content || [])
+    .filter((b) => b.type === "text")
+    .map((b) => b.text)
+    .join("\n");
+}
+
+const FRAMEWORK_PROMPTS = {
+  Poster: {
+    label: "Poster",
+    intro: "Answer a few questions and Claude will draft the poster fields for you.",
+    system: `You are a sharp, friendly product management coach helping someone fill out a one-page Project Poster before they start building. The poster covers: what a winning deliverable looks like to a customer, the problem being solved, how it fits company strategy, whether it ties to a theme, why it matters, why now, success metrics, constraints, what's already known, and what still needs to be answered.
+
+Ask ONE focused question at a time, in plain conversational language, building on what they've already told you rather than repeating yourself. Push gently for specifics when an answer is vague (e.g. push "improve engagement" toward a number or a concrete behavior change). After you've covered the key facets, tell them they can hit "Synthesize into fields" whenever they're ready, and offer to keep going if they want to add more detail. Keep responses short, a few sentences at most.`,
+    extractionSystem: `You extract structured data from a product planning conversation. Given the conversation so far, output ONLY a single valid JSON object with exactly these string keys: winningDeliverable, problemStatement, strategyFit, themeTie, whyImportant, whyNow, successMetrics, constraints, whatWeKnow, whatWeNeedToAnswer. Write each value as a concise, well-formed sentence or two in the user's voice, based only on what was actually discussed. Use an empty string for anything not yet discussed. Do not include markdown formatting, code fences, or any text outside the JSON object.`,
+    extractionInstruction: "Please synthesize our conversation so far into the JSON structure you were given.",
+  },
+  FiveWhys: {
+    label: "5 Whys",
+    intro: "Talk through the customer's real motivation and Claude will build the whys chain.",
+    system: `You are a thoughtful product discovery coach running a "5 Whys" exercise to find the emotional root of a customer problem. Start by asking what the initial question or behavior is (e.g. "why does a customer do X"), then keep asking "why" based on their previous answer, one question at a time, drilling past the surface-level reason toward the real emotional core. After roughly five whys, help them articulate a root cause and an opportunity for how the experience could be enhanced. Keep each message short and conversational.`,
+    extractionSystem: `You extract structured data from a "5 Whys" discovery conversation. Given the conversation so far, output ONLY a single valid JSON object with exactly these keys: problem (string, the initial question), whys (an array of up to 5 strings, one per why in order), rootCause (string), opportunity (string). Use what was actually discussed; use empty strings or a shorter array if fewer than 5 whys were covered. Do not include markdown formatting, code fences, or any text outside the JSON object.`,
+    extractionInstruction: "Please synthesize our conversation so far into the JSON structure you were given.",
+  },
+  Jtbd: {
+    label: "Jobs to be done",
+    intro: "Describe a customer situation and Claude will draft a Job to be Done entry.",
+    system: `You are a product discovery coach helping someone articulate Jobs to be Done. A job has five parts: the situation ("when..."), the motivation ("I want to..."), the outcome ("so I can..."), the emotional job ("making me feel..."), and the social job ("making others see I'm..."). Ask about one part at a time, and feel free to help them uncover jobs they hadn't consciously named. If they describe more than one distinct job across the conversation, that's great — help them articulate each one clearly. Keep messages short and conversational.`,
+    extractionSystem: `You extract structured data from a Jobs to be Done discovery conversation. Given the conversation so far, output ONLY a single valid JSON object with one key, "jobs", an array of objects, each with the string keys: situation, motivation, outcome, emotionalJob, socialJob. Include one array entry per distinct job discussed (usually one, sometimes more). Do not include markdown formatting, code fences, or any text outside the JSON object.`,
+    extractionInstruction: "Please synthesize our conversation so far into the JSON structure you were given.",
+  },
+  NorthStar: {
+    label: "North Star",
+    intro: "Talk through what success looks like and Claude will draft the north star.",
+    system: `You are a product coach helping someone define a North Star: a single, memorable statement of what success looks like from the customer's perspective, and what could be measured to know they've achieved it. Ask what changes for the customer if this goes well, and what number or signal would prove it. Keep it to a short back-and-forth, then help them tighten it into one or two clear sentences. Keep messages short and conversational.`,
+    extractionSystem: `You extract structured data from a product discovery conversation about a North Star / definition of success. Given the conversation so far, output ONLY a single valid JSON object with exactly one key: northStar, a string containing one or two well-formed sentences. Do not include markdown formatting, code fences, or any text outside the JSON object.`,
+    extractionInstruction: "Please synthesize our conversation so far into the JSON structure you were given.",
+  },
+};
+
+function parseJsonReply(raw) {
+  const cleaned = raw.replace(/```json/gi, "").replace(/```/g, "").trim();
+  return JSON.parse(cleaned);
 }
 
 /* ---------------------------------------------------------
@@ -206,6 +458,135 @@ function relativeTime(ts) {
   if (diff < day) return Math.floor(diff / 3600000) + "h ago";
   if (diff < day * 30) return Math.floor(diff / day) + "d ago";
   return new Date(ts).toLocaleDateString();
+}
+
+/* ---------------------------------------------------------
+   PROJECT CHARTER EXPORT
+   Synthesizes the poster, discovery, north star, and checklist
+   into a single document and downloads it as a Word-compatible
+   .doc file. No external service or library involved — the
+   person can then save that file to Drive, Notion, or anywhere
+   else themselves.
+--------------------------------------------------------- */
+
+function escapeHtml(str) {
+  return (str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function checklistCompletion(items) {
+  if (!items || items.length === 0) return 100;
+  const done = items.filter((i) => i.status === "Done" || i.status === "N/A").length;
+  return Math.round((done / items.length) * 100);
+}
+
+function buildCharterHtml(project) {
+  const p = project.poster;
+  const fw = project.fiveWhys;
+
+  const checklistRows = PHASES.map((phase) => {
+    const items = project.checklist[phase];
+    const open = items.filter((i) => i.status !== "Done" && i.status !== "N/A");
+    const openList = open.length
+      ? '<ul style="margin:4px 0 0 18px;padding:0;">' +
+        open.map((i) => `<li>${escapeHtml(i.task)} — <em>${escapeHtml(i.status)}</em></li>`).join("") +
+        "</ul>"
+      : '<p style="margin:4px 0 0;color:#4a5a55;"><em>All items complete.</em></p>';
+    return `<tr>
+      <td style="border:1px solid #ccc;padding:8px;vertical-align:top;width:120px;">
+        <strong>${phase}</strong><br/>${checklistCompletion(items)}% complete
+      </td>
+      <td style="border:1px solid #ccc;padding:8px;vertical-align:top;">${openList}</td>
+    </tr>`;
+  }).join("");
+
+  const whysList = fw.whys.filter(Boolean).length
+    ? "<ol style=\"margin:4px 0 0 18px;padding:0;\">" +
+      fw.whys.filter(Boolean).map((w) => `<li>${escapeHtml(w)}</li>`).join("") +
+      "</ol>"
+    : "<p><em>Not yet captured.</em></p>";
+
+  const jtbdBlocks = project.jtbd.length
+    ? project.jtbd
+        .map(
+          (j, i) => `<p style="margin:0 0 10px;">
+            <strong>Job ${i + 1}:</strong> When ${escapeHtml(j.situation) || "…"}, I want to
+            ${escapeHtml(j.motivation) || "…"}, so I can ${escapeHtml(j.outcome) || "…"}.
+            This makes me feel ${escapeHtml(j.emotionalJob) || "…"}, and lets others see
+            I'm ${escapeHtml(j.socialJob) || "…"}.
+          </p>`
+        )
+        .join("")
+    : "<p><em>No jobs to be done captured yet.</em></p>";
+
+  const field = (label, value) =>
+    `<div style="font-weight:bold;margin-top:12px;margin-bottom:2px;">${label}</div>
+     <p style="margin:0;">${escapeHtml(value) || "—"}</p>`;
+
+  return `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>${escapeHtml(project.name)} — Project Charter</title>
+<style>
+  body { font-family: Calibri, Arial, sans-serif; color: #17262B; line-height: 1.5; }
+  h1 { font-size: 24px; margin-bottom: 2px; }
+  h2 { font-size: 16px; border-bottom: 1px solid #ccc; padding-bottom: 4px; margin-top: 28px; }
+  .meta { color: #555; font-size: 12px; margin-bottom: 20px; }
+  table { border-collapse: collapse; width: 100%; margin-top: 8px; }
+</style>
+</head>
+<body>
+  <h1>${escapeHtml(project.name)}</h1>
+  <div class="meta">
+    Project Charter — Team: ${escapeHtml(project.team)} · Status: ${escapeHtml(project.status)} ·
+    Size: ${escapeHtml(project.size)} · Priority: ${project.priority}/5 ·
+    Generated ${new Date().toLocaleDateString()}
+  </div>
+
+  <h2>Project Poster</h2>
+  ${field("What a winning deliverable looks like", p.winningDeliverable)}
+  ${field("Problem statement", p.problemStatement)}
+  ${field("Strategy fit", p.strategyFit)}
+  ${field("Theme tie", p.themeTie)}
+  ${field("Why this matters", p.whyImportant)}
+  ${field("Why now", p.whyNow)}
+  ${field("Success metrics", p.successMetrics)}
+  ${field("Constraints", p.constraints)}
+  ${field("What we already know", p.whatWeKnow)}
+  ${field("What we need to answer", p.whatWeNeedToAnswer)}
+
+  <h2>Discovery — 5 Whys</h2>
+  ${field("Initial question", fw.problem)}
+  <div style="font-weight:bold;margin-top:12px;margin-bottom:2px;">Chain</div>
+  ${whysList}
+  ${field("Root cause", fw.rootCause)}
+  ${field("Opportunity", fw.opportunity)}
+
+  <h2>Discovery — Jobs to be Done</h2>
+  ${jtbdBlocks}
+
+  <h2>Definition of Success / North Star</h2>
+  <p>${escapeHtml(project.northStar) || "—"}</p>
+
+  <h2>Release Checklist Status</h2>
+  <table>${checklistRows}</table>
+</body>
+</html>`;
+}
+
+function downloadCharter(project) {
+  const html = buildCharterHtml(project);
+  const blob = new Blob(["\ufeff", html], { type: "application/msword" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const safeName =
+    (project.name || "project").replace(/[^a-z0-9]+/gi, "-").replace(/^-+|-+$/g, "").toLowerCase() || "project";
+  a.href = url;
+  a.download = `${safeName}-charter.doc`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 /* ---------------------------------------------------------
@@ -275,6 +656,172 @@ function Select({ value, onChange, options }) {
         <option key={o} value={o}>{o}</option>
       ))}
     </select>
+  );
+}
+
+/* ---------------------------------------------------------
+   AGENT CHAT PANEL
+   Shared UI for the four guided-conversation agents (Poster,
+   5 Whys, JTBD, North Star). Chat freely, then hit "Synthesize
+   into fields" whenever ready — the fields on the other side of
+   the tab stay directly editable regardless.
+--------------------------------------------------------- */
+
+function AgentChatPanel({ frameworkKey, conversation, onConversationChange, onSynthesize, apiKey }) {
+  const config = FRAMEWORK_PROMPTS[frameworkKey];
+  const [draft, setDraft] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [synthesizing, setSynthesizing] = useState(false);
+  const [error, setError] = useState("");
+  const logRef = useRef(null);
+
+  useEffect(() => {
+    if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
+  }, [conversation.length, busy]);
+
+  const send = async () => {
+    const text = draft.trim();
+    if (!text || busy) return;
+    if (NEEDS_API_KEY && !apiKey) {
+      setError("Add your Anthropic API key above first.");
+      return;
+    }
+    setError("");
+    setDraft("");
+    setBusy(true);
+    const withUser = [...conversation, { id: uid(), role: "user", text }];
+    onConversationChange(withUser);
+    try {
+      const apiMessages = withUser.map((m) => ({ role: m.role, content: m.text }));
+      const reply = await callClaude(apiMessages, config.system, apiKey);
+      onConversationChange([...withUser, { id: uid(), role: "assistant", text: reply }]);
+    } catch (err) {
+      setError(err.message || "Something went wrong talking to Claude.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const synthesize = async () => {
+    if (conversation.length === 0 || synthesizing) return;
+    if (NEEDS_API_KEY && !apiKey) {
+      setError("Add your Anthropic API key above first.");
+      return;
+    }
+    setError("");
+    setSynthesizing(true);
+    try {
+      const apiMessages = [
+        ...conversation.map((m) => ({ role: m.role, content: m.text })),
+        { role: "user", content: config.extractionInstruction },
+      ];
+      const reply = await callClaude(apiMessages, config.extractionSystem, apiKey);
+      const parsed = parseJsonReply(reply);
+      onSynthesize(parsed);
+    } catch (err) {
+      setError("Couldn't synthesize that — " + (err.message || "try again."));
+    } finally {
+      setSynthesizing(false);
+    }
+  };
+
+  return (
+    <div className="agent-chat">
+      <div className="agent-chat__head">
+        <div>
+          <div className="agent-chat__title"><Sparkles size={13} /> {config.label} agent</div>
+          <div className="agent-chat__desc">{config.intro}</div>
+        </div>
+        <button
+          className="btn btn--small"
+          onClick={synthesize}
+          disabled={synthesizing || conversation.length === 0}
+        >
+          {synthesizing ? "Synthesizing…" : "Synthesize into fields"}
+        </button>
+      </div>
+      <div className="agent-chat__log" ref={logRef}>
+        {conversation.length === 0 && (
+          <div className="agent-chat__empty">Start talking and the agent will ask the first question.</div>
+        )}
+        {conversation.map((m) => (
+          <div className={`agent-msg agent-msg--${m.role}`} key={m.id}>
+            <div className="agent-msg__bubble">{m.text}</div>
+          </div>
+        ))}
+        {busy && (
+          <div className="agent-msg agent-msg--assistant">
+            <div className="agent-msg__bubble agent-msg__bubble--typing">…</div>
+          </div>
+        )}
+      </div>
+      {error && <div className="agent-chat__error">{error}</div>}
+      <form
+        className="agent-chat__input"
+        onSubmit={(e) => {
+          e.preventDefault();
+          send();
+        }}
+      >
+        <input
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          placeholder="Type a reply…"
+          disabled={busy}
+        />
+        <button className="btn btn--primary btn--small" type="submit" disabled={busy || !draft.trim()}>
+          Send
+        </button>
+      </form>
+    </div>
+  );
+}
+
+function ApiKeyBar({ apiKey, onChange }) {
+  const [editing, setEditing] = useState(!apiKey);
+  const [draft, setDraft] = useState(apiKey);
+
+  if (!editing) {
+    return (
+      <div className="api-key-bar">
+        <span className="api-key-bar__status">Anthropic API key set</span>
+        <button
+          type="button"
+          className="btn btn--ghost btn--small"
+          onClick={() => {
+            setDraft(apiKey);
+            setEditing(true);
+          }}
+        >
+          Change
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form
+      className="api-key-bar"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onChange(draft.trim());
+        setEditing(false);
+      }}
+    >
+      <span className="api-key-bar__label"><KeyRound size={13} /> Anthropic API key</span>
+      <input
+        className="api-key-bar__input"
+        type="password"
+        placeholder="sk-ant-…"
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+      />
+      <button className="btn btn--primary btn--small" type="submit">Save</button>
+      <span className="api-key-bar__hint">
+        Stored only in your browser and sent directly to Anthropic. Needed to power the
+        conversational agents on this page.
+      </span>
+    </form>
   );
 }
 
@@ -437,14 +984,61 @@ function Dashboard({ projects, teams, onOpen, onCreate, onDelete, onAddTeam, onR
 
 const TABS = ["Poster", "Discovery", "North Star", "Checklist"];
 
-function ProjectDetail({ project, teams, onChange, onBack }) {
+function ProjectDetail({ project, teams, onChange, onBack, apiKey }) {
   const [tab, setTab] = useState("Poster");
 
+  // update() accepts a plain patch object (safe for simple, synchronous field
+  // edits) or a function of (previousProject) => patch (required for anything
+  // that resolves after an await, like an agent's reply — see AI CONVERSATION
+  // LAYER above for why).
   const update = (patch) => {
-    onChange({ ...project, ...patch, updatedAt: Date.now() });
+    onChange(patch);
   };
   const updatePoster = (key, value) => {
     update({ poster: { ...project.poster, [key]: value } });
+  };
+  const mergePoster = (patch) => {
+    update((prev) => {
+      const next = { ...prev.poster };
+      Object.keys(patch || {}).forEach((k) => {
+        if (patch[k]) next[k] = patch[k];
+      });
+      return { poster: next };
+    });
+  };
+  const mergeFiveWhys = (patch) => {
+    update((prev) => {
+      const whys = [0, 1, 2, 3, 4].map((i) =>
+        patch && patch.whys && patch.whys[i] ? patch.whys[i] : prev.fiveWhys.whys[i]
+      );
+      return {
+        fiveWhys: {
+          problem: (patch && patch.problem) || prev.fiveWhys.problem,
+          whys,
+          rootCause: (patch && patch.rootCause) || prev.fiveWhys.rootCause,
+          opportunity: (patch && patch.opportunity) || prev.fiveWhys.opportunity,
+        },
+      };
+    });
+  };
+  const addSynthesizedJobs = (patch) => {
+    const newJobs = ((patch && patch.jobs) || []).map((j) => ({
+      id: uid(),
+      situation: j.situation || "",
+      motivation: j.motivation || "",
+      outcome: j.outcome || "",
+      emotionalJob: j.emotionalJob || "",
+      socialJob: j.socialJob || "",
+    }));
+    if (!newJobs.length) return;
+    update((prev) => ({ jtbd: [...prev.jtbd, ...newJobs] }));
+  };
+  const mergeNorthStar = (patch) => {
+    if (!(patch && patch.northStar)) return;
+    update((prev) => ({ northStar: patch.northStar }));
+  };
+  const setChat = (frameworkKey, conversation) => {
+    update((prev) => ({ chats: { ...prev.chats, [frameworkKey]: conversation } }));
   };
 
   const teamOptions = teams.includes(project.team) ? teams : [project.team, ...teams];
@@ -499,17 +1093,41 @@ function ProjectDetail({ project, teams, onChange, onBack }) {
           ))}
         </div>
 
-        {tab === "Poster" && <PosterTab poster={project.poster} onChange={updatePoster} />}
+        {tab === "Poster" && (
+          <PosterTab
+            poster={project.poster}
+            onChange={updatePoster}
+            project={project}
+            chat={project.chats.Poster}
+            onChatChange={(conv) => setChat("Poster", conv)}
+            onSynthesize={mergePoster}
+            apiKey={apiKey}
+          />
+        )}
         {tab === "Discovery" && (
           <DiscoveryTab
             fiveWhys={project.fiveWhys}
             jtbd={project.jtbd}
             onFiveWhys={(fw) => update({ fiveWhys: fw })}
             onJtbd={(j) => update({ jtbd: j })}
+            fiveWhysChat={project.chats.FiveWhys}
+            onFiveWhysChatChange={(conv) => setChat("FiveWhys", conv)}
+            onFiveWhysSynthesize={mergeFiveWhys}
+            jtbdChat={project.chats.Jtbd}
+            onJtbdChatChange={(conv) => setChat("Jtbd", conv)}
+            onJtbdSynthesize={addSynthesizedJobs}
+            apiKey={apiKey}
           />
         )}
         {tab === "North Star" && (
-          <NorthStarTab value={project.northStar} onChange={(v) => update({ northStar: v })} />
+          <NorthStarTab
+            value={project.northStar}
+            onChange={(v) => update({ northStar: v })}
+            chat={project.chats.NorthStar}
+            onChatChange={(conv) => setChat("NorthStar", conv)}
+            onSynthesize={mergeNorthStar}
+            apiKey={apiKey}
+          />
         )}
         {tab === "Checklist" && (
           <ChecklistTab checklist={project.checklist} onChange={(c) => update({ checklist: c })} />
@@ -519,7 +1137,7 @@ function ProjectDetail({ project, teams, onChange, onBack }) {
   );
 }
 
-function PosterTab({ poster, onChange }) {
+function PosterTab({ poster, onChange, project, chat, onChatChange, onSynthesize, apiKey }) {
   const rows = [
     ["winningDeliverable", "What a winning deliverable looks like to a customer", "The elevator pitch. This is the project vision."],
     ["problemStatement", "What problem are we solving?", ""],
@@ -533,17 +1151,48 @@ function PosterTab({ poster, onChange }) {
     ["whatWeNeedToAnswer", "What do we need to answer?", "Assumptions that need validating. Gaps in understanding."],
   ];
   return (
-    <div className="panel poster-grid">
-      {rows.map(([key, label, hint]) => (
-        <Field key={key} label={label} hint={hint}>
-          <TextArea value={poster[key]} onChange={(e) => onChange(key, e.target.value)} />
-        </Field>
-      ))}
+    <div className="panel">
+      <div className="poster-toolbar">
+        <div className="poster-toolbar__hint">
+          Pulls the poster, discovery notes, north star, and checklist status into one document.
+        </div>
+        <button className="btn btn--primary" onClick={() => downloadCharter(project)}>
+          <Download size={14} /> Download as Word doc
+        </button>
+      </div>
+      <div className="split-panel">
+        <AgentChatPanel
+          frameworkKey="Poster"
+          conversation={chat}
+          onConversationChange={onChatChange}
+          onSynthesize={onSynthesize}
+          apiKey={apiKey}
+        />
+        <div className="poster-grid">
+          {rows.map(([key, label, hint]) => (
+            <Field key={key} label={label} hint={hint}>
+              <TextArea value={poster[key]} onChange={(e) => onChange(key, e.target.value)} />
+            </Field>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
 
-function DiscoveryTab({ fiveWhys, jtbd, onFiveWhys, onJtbd }) {
+function DiscoveryTab({
+  fiveWhys,
+  jtbd,
+  onFiveWhys,
+  onJtbd,
+  fiveWhysChat,
+  onFiveWhysChatChange,
+  onFiveWhysSynthesize,
+  jtbdChat,
+  onJtbdChatChange,
+  onJtbdSynthesize,
+  apiKey,
+}) {
   const setWhy = (i, val) => {
     const whys = [...fiveWhys.whys];
     whys[i] = val;
@@ -566,29 +1215,40 @@ function DiscoveryTab({ fiveWhys, jtbd, onFiveWhys, onJtbd }) {
           What motivates the customer to use the product. Drill past the surface answer to the
           emotional core of the problem.
         </div>
-        <Field label="Initial question">
-          <TextArea
-            rows={2}
-            placeholder="e.g. Why do you drink coffee in the morning?"
-            value={fiveWhys.problem}
-            onChange={(e) => onFiveWhys({ ...fiveWhys, problem: e.target.value })}
+        <div className="split-panel">
+          <AgentChatPanel
+            frameworkKey="FiveWhys"
+            conversation={fiveWhysChat}
+            onConversationChange={onFiveWhysChatChange}
+            onSynthesize={onFiveWhysSynthesize}
+            apiKey={apiKey}
           />
-        </Field>
-        <div className="whys-chain">
-          {fiveWhys.whys.map((w, i) => (
-            <div className="whys-chain__row" key={i}>
-              <div className="whys-chain__index">{i + 1}</div>
-              <TextArea rows={1} placeholder="Why?" value={w} onChange={(e) => setWhy(i, e.target.value)} />
+          <div>
+            <Field label="Initial question">
+              <TextArea
+                rows={2}
+                placeholder="e.g. Why do you drink coffee in the morning?"
+                value={fiveWhys.problem}
+                onChange={(e) => onFiveWhys({ ...fiveWhys, problem: e.target.value })}
+              />
+            </Field>
+            <div className="whys-chain">
+              {fiveWhys.whys.map((w, i) => (
+                <div className="whys-chain__row" key={i}>
+                  <div className="whys-chain__index">{i + 1}</div>
+                  <TextArea rows={1} placeholder="Why?" value={w} onChange={(e) => setWhy(i, e.target.value)} />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        <div className="two-col">
-          <Field label="Root cause">
-            <TextArea value={fiveWhys.rootCause} onChange={(e) => onFiveWhys({ ...fiveWhys, rootCause: e.target.value })} />
-          </Field>
-          <Field label="Opportunity" hint="How can the experience be enhanced?">
-            <TextArea value={fiveWhys.opportunity} onChange={(e) => onFiveWhys({ ...fiveWhys, opportunity: e.target.value })} />
-          </Field>
+            <div className="two-col">
+              <Field label="Root cause">
+                <TextArea value={fiveWhys.rootCause} onChange={(e) => onFiveWhys({ ...fiveWhys, rootCause: e.target.value })} />
+              </Field>
+              <Field label="Opportunity" hint="How can the experience be enhanced?">
+                <TextArea value={fiveWhys.opportunity} onChange={(e) => onFiveWhys({ ...fiveWhys, opportunity: e.target.value })} />
+              </Field>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -597,25 +1257,36 @@ function DiscoveryTab({ fiveWhys, jtbd, onFiveWhys, onJtbd }) {
         <div className="subsection__hint">
           As a customer, when I want to, so I can, making me feel, and making others see I'm.
         </div>
-        {jtbd.map((j) => (
-          <div className="jtbd-row" key={j.id}>
-            <button className="jtbd-row__remove" onClick={() => removeJtbd(j.id)}><X size={14} /></button>
-            <div className="jtbd-grid">
-              <Field label="When…"><TextArea rows={2} value={j.situation} onChange={(e) => updateJtbd(j.id, "situation", e.target.value)} /></Field>
-              <Field label="I want to…"><TextArea rows={2} value={j.motivation} onChange={(e) => updateJtbd(j.id, "motivation", e.target.value)} /></Field>
-              <Field label="So I can…"><TextArea rows={2} value={j.outcome} onChange={(e) => updateJtbd(j.id, "outcome", e.target.value)} /></Field>
-              <Field label="Making me feel…"><TextArea rows={2} value={j.emotionalJob} onChange={(e) => updateJtbd(j.id, "emotionalJob", e.target.value)} /></Field>
-              <Field label="Others see I'm…"><TextArea rows={2} value={j.socialJob} onChange={(e) => updateJtbd(j.id, "socialJob", e.target.value)} /></Field>
-            </div>
+        <div className="split-panel">
+          <AgentChatPanel
+            frameworkKey="Jtbd"
+            conversation={jtbdChat}
+            onConversationChange={onJtbdChatChange}
+            onSynthesize={onJtbdSynthesize}
+            apiKey={apiKey}
+          />
+          <div>
+            {jtbd.map((j) => (
+              <div className="jtbd-row" key={j.id}>
+                <button className="jtbd-row__remove" onClick={() => removeJtbd(j.id)}><X size={14} /></button>
+                <div className="jtbd-grid">
+                  <Field label="When…"><TextArea rows={2} value={j.situation} onChange={(e) => updateJtbd(j.id, "situation", e.target.value)} /></Field>
+                  <Field label="I want to…"><TextArea rows={2} value={j.motivation} onChange={(e) => updateJtbd(j.id, "motivation", e.target.value)} /></Field>
+                  <Field label="So I can…"><TextArea rows={2} value={j.outcome} onChange={(e) => updateJtbd(j.id, "outcome", e.target.value)} /></Field>
+                  <Field label="Making me feel…"><TextArea rows={2} value={j.emotionalJob} onChange={(e) => updateJtbd(j.id, "emotionalJob", e.target.value)} /></Field>
+                  <Field label="Others see I'm…"><TextArea rows={2} value={j.socialJob} onChange={(e) => updateJtbd(j.id, "socialJob", e.target.value)} /></Field>
+                </div>
+              </div>
+            ))}
+            <button className="btn" onClick={addJtbd}><Plus size={14} /> Add job to be done</button>
           </div>
-        ))}
-        <button className="btn" onClick={addJtbd}><Plus size={14} /> Add job to be done</button>
+        </div>
       </section>
     </div>
   );
 }
 
-function NorthStarTab({ value, onChange }) {
+function NorthStarTab({ value, onChange, chat, onChatChange, onSynthesize, apiKey }) {
   return (
     <div className="panel">
       <section className="subsection">
@@ -625,7 +1296,16 @@ function NorthStarTab({ value, onChange }) {
           to define it? This is a north star, reminding the team what to achieve without
           prescribing how.
         </div>
-        <TextArea rows={8} value={value} onChange={(e) => onChange(e.target.value)} />
+        <div className="split-panel">
+          <AgentChatPanel
+            frameworkKey="NorthStar"
+            conversation={chat}
+            onConversationChange={onChatChange}
+            onSynthesize={onSynthesize}
+            apiKey={apiKey}
+          />
+          <TextArea rows={8} value={value} onChange={(e) => onChange(e.target.value)} />
+        </div>
       </section>
     </div>
   );
@@ -718,14 +1398,26 @@ function App() {
   const [openId, setOpenId] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [status, setStatus] = useState("");
+  const [apiKey, setApiKeyState] = useState(() => (NEEDS_API_KEY ? loadApiKey() : ""));
   const saveTimer = useRef(null);
+
+  const setApiKey = (key) => {
+    setApiKeyState(key);
+    if (NEEDS_API_KEY) saveApiKey(key);
+  };
 
   useEffect(() => {
     (async () => {
       const data = await loadData();
       if (data) {
-        if (data.projects) setProjects(data.projects);
+        if (data.projects) setProjects(data.projects.map(normalizeProject));
         if (data.teams) setTeams(data.teams);
+      } else {
+        // First-ever visit: seed with example projects so the tool isn't a
+        // blank page. These are ordinary projects — editable and deletable
+        // just like anything the user creates themselves.
+        setProjects(demoProjects());
+        setTeams(DEFAULT_TEAMS);
       }
       setLoaded(true);
     })();
@@ -753,8 +1445,18 @@ function App() {
     setProjects((prev) => prev.filter((p) => p.id !== id));
     if (openId === id) setOpenId(null);
   };
-  const updateProject = (updated) => {
-    setProjects((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+  // Accepts either a plain patch object or a function of (previousProject) => patch.
+  // The functional form always merges against the freshest state inside the
+  // setProjects updater, so an in-flight agent reply can never clobber a
+  // manual edit the person made to a different field while waiting.
+  const updateProject = (id, patch) => {
+    setProjects((prev) =>
+      prev.map((p) => {
+        if (p.id !== id) return p;
+        const delta = typeof patch === "function" ? patch(p) : patch;
+        return { ...p, ...delta, updatedAt: Date.now() };
+      })
+    );
   };
   const addTeam = (name) => {
     setTeams((prev) => (prev.includes(name) ? prev : [...prev, name]));
@@ -1005,9 +1707,72 @@ function App() {
         .tabbar__item[data-active="true"] { color: var(--ink); border-bottom-color: var(--teal); }
 
         .panel { display: flex; flex-direction: column; gap: 20px; }
+        .poster-toolbar {
+          display: flex; align-items: center; justify-content: space-between; gap: 16px;
+          flex-wrap: wrap;
+          border: 1px solid var(--hairline); border-radius: 12px;
+          padding: 14px 16px; background: var(--surface);
+        }
+        .poster-toolbar__hint { font-size: 12.5px; color: var(--ink-faint); max-width: 46ch; }
         .poster-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
         @media (max-width: 700px) { .poster-grid { grid-template-columns: 1fr; } }
         .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+        /* ---------- agent chat ---------- */
+        .split-panel { display: grid; grid-template-columns: 340px 1fr; gap: 20px; align-items: start; }
+        @media (max-width: 900px) { .split-panel { grid-template-columns: 1fr; } }
+
+        .agent-chat {
+          border: 1px solid var(--hairline); border-radius: 12px;
+          background: var(--surface); display: flex; flex-direction: column;
+          overflow: hidden;
+        }
+        .agent-chat__head {
+          display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+          padding: 14px 14px 12px; border-bottom: 1px solid var(--hairline);
+        }
+        .agent-chat__title { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13.5px; display: flex; align-items: center; gap: 5px; }
+        .agent-chat__desc { font-size: 11.5px; color: var(--ink-faint); margin-top: 3px; max-width: 30ch; }
+        .agent-chat__log {
+          flex: 1; min-height: 200px; max-height: 380px; overflow-y: auto;
+          padding: 14px; display: flex; flex-direction: column; gap: 10px;
+          background: var(--canvas);
+        }
+        .agent-chat__empty { font-size: 12.5px; color: var(--ink-faint); font-style: italic; }
+        .agent-msg { display: flex; }
+        .agent-msg--user { justify-content: flex-end; }
+        .agent-msg--assistant { justify-content: flex-start; }
+        .agent-msg__bubble {
+          max-width: 88%; padding: 8px 11px; border-radius: 10px;
+          font-size: 12.5px; line-height: 1.5; white-space: pre-wrap;
+        }
+        .agent-msg--user .agent-msg__bubble { background: var(--ink); color: var(--surface); border-bottom-right-radius: 3px; }
+        .agent-msg--assistant .agent-msg__bubble { background: var(--surface); border: 1px solid var(--hairline); color: var(--ink); border-bottom-left-radius: 3px; }
+        .agent-msg__bubble--typing { color: var(--ink-faint); font-style: italic; }
+        .agent-chat__error {
+          padding: 8px 14px; font-size: 11.5px; color: var(--brick); background: rgba(166,67,47,0.08);
+          border-top: 1px solid var(--hairline);
+        }
+        .agent-chat__input { display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--hairline); }
+        .agent-chat__input input {
+          flex: 1; padding: 7px 10px; border-radius: 8px;
+          border: 1px solid var(--hairline); background: var(--canvas);
+          font-family: inherit; font-size: 12.5px; color: var(--ink);
+        }
+
+        .api-key-bar {
+          display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+          border: 1px solid var(--hairline); border-radius: 10px;
+          padding: 10px 14px; background: var(--sand); margin-bottom: 20px;
+        }
+        .api-key-bar__status { font-size: 12.5px; font-weight: 500; color: var(--ink); }
+        .api-key-bar__label { font-size: 12.5px; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+        .api-key-bar__input {
+          flex: 1; min-width: 200px; max-width: 320px;
+          padding: 6px 10px; border-radius: 6px; border: 1px solid var(--hairline);
+          background: var(--surface); font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+        }
+        .api-key-bar__hint { font-size: 11px; color: var(--ink-faint); flex-basis: 100%; }
 
         .field__label { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
         .field__hint { font-size: 12px; color: var(--ink-faint); margin-bottom: 6px; }
@@ -1089,6 +1854,8 @@ function App() {
         }
       `}</style>
 
+      {NEEDS_API_KEY && <ApiKeyBar apiKey={apiKey} onChange={setApiKey} />}
+
       {!openProject ? (
         <Dashboard
           projects={projects}
@@ -1103,8 +1870,9 @@ function App() {
         <ProjectDetail
           project={openProject}
           teams={teams}
-          onChange={updateProject}
+          onChange={(patch) => updateProject(openProject.id, patch)}
           onBack={() => setOpenId(null)}
+          apiKey={apiKey}
         />
       )}
 
