@@ -124,6 +124,32 @@ const DEFAULT_CHECKLIST = {
 
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 
+// Reads an image file and downscales it to a JPEG data URL before it's
+// stored. Project images are saved inline (no file storage available here),
+// so keeping each one small matters — an unresized photo could eat a large
+// chunk of the storage budget on its own.
+function readAndResizeImage(file, maxWidth) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Couldn't read that file."));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("That doesn't look like a readable image."));
+      img.onload = () => {
+        const scale = Math.min(1, (maxWidth || 900) / img.width);
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", 0.82));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 function freshChecklist() {
   const out = {};
   PHASES.forEach((phase) => {
@@ -142,6 +168,7 @@ function freshProject(name, defaultTeam) {
     status: "Unreleased",
     size: "M",
     priority: 3,
+    image: "",
     createdAt: Date.now(),
     updatedAt: Date.now(),
     brief: {
@@ -202,7 +229,7 @@ function normalizeProject(p) {
     NorthStar: oldChats.NorthStar || [],
   };
   const { poster, ...rest } = p;
-  return { ...rest, brief, chats };
+  return { image: "", ...rest, brief, chats };
 }
 
 /* ---------------------------------------------------------
@@ -944,7 +971,29 @@ function SettingsPanel({ open, onClose, theme, onToggleTheme, needsApiKey, apiKe
   );
 }
 
+/* ---------------------------------------------------------
+   CONFIRM DIALOG
+   Small reusable confirmation overlay — used for deleting a
+   project, and available for any other destructive action later.
+--------------------------------------------------------- */
 
+function ConfirmDialog({ open, title, body, confirmLabel, onConfirm, onCancel }) {
+  if (!open) return null;
+  return (
+    <div className="confirm-overlay" onClick={onCancel}>
+      <div className="confirm-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="confirm-panel__title">{title}</div>
+        {body && <div className="confirm-panel__body">{body}</div>}
+        <div className="confirm-panel__actions">
+          <button className="btn" type="button" onClick={onCancel}>Cancel</button>
+          <button className="btn btn--danger" type="button" onClick={onConfirm}>
+            {confirmLabel || "Delete"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function TeamManager({ teams, onAdd, onRemove }) {
   const [draft, setDraft] = useState("");
@@ -998,6 +1047,8 @@ function Dashboard({ projects, teams, onOpen, onCreate, onDelete, onAddTeam, onR
   const [draftName, setDraftName] = useState("");
   const [creating, setCreating] = useState(false);
   const [managingTeams, setManagingTeams] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const pendingDeleteProject = projects.find((p) => p.id === pendingDeleteId);
 
   return (
     <div className="dash">
@@ -1068,29 +1119,43 @@ function Dashboard({ projects, teams, onOpen, onCreate, onDelete, onAddTeam, onR
             <button
               className="pcard__delete"
               title="Delete project"
-              onClick={(e) => { e.stopPropagation(); onDelete(p.id); }}
+              onClick={(e) => { e.stopPropagation(); setPendingDeleteId(p.id); }}
             >
               <Trash2 size={14} />
             </button>
-            <div className="pcard__top">
-              <div className="pcard__name">{p.name}</div>
-              <div className="pcard__meta">
-                <span className="chip">{p.team}</span>
-                <span className="chip chip--mono">{p.size}</span>
+            {p.image && (
+              <div className="pcard__image" style={{ backgroundImage: `url(${p.image})` }} />
+            )}
+            <div className="pcard__body">
+              <div className="pcard__top">
+                <div className="pcard__name">{p.name}</div>
+                <div className="pcard__meta">
+                  <span className="chip">{p.team}</span>
+                  <span className="chip chip--mono">{p.size}</span>
+                </div>
               </div>
-            </div>
-            <div className="pcard__status">
-              <span className="status-pill">{p.status}</span>
-              <PriorityDots value={p.priority} />
-            </div>
-            <GateTrack project={p} size="compact" />
-            <div className="pcard__foot">
-              <span>{Math.round(overallProgress(p) * 100)}% complete</span>
-              <span>{relativeTime(p.updatedAt)}</span>
+              <div className="pcard__status">
+                <span className="status-pill">{p.status}</span>
+                <PriorityDots value={p.priority} />
+              </div>
+              <GateTrack project={p} size="compact" />
+              <div className="pcard__foot">
+                <span>{Math.round(overallProgress(p) * 100)}% complete</span>
+                <span>{relativeTime(p.updatedAt)}</span>
+              </div>
             </div>
           </div>
         ))}
       </div>
+
+      <ConfirmDialog
+        open={!!pendingDeleteId}
+        title={pendingDeleteProject ? `Delete "${pendingDeleteProject.name}"?` : "Delete project?"}
+        body="This removes the project and everything in it — brief, discovery notes, checklist, and conversation history. This can't be undone."
+        confirmLabel="Delete project"
+        onConfirm={() => { onDelete(pendingDeleteId); setPendingDeleteId(null); }}
+        onCancel={() => setPendingDeleteId(null)}
+      />
     </div>
   );
 }
@@ -1158,43 +1223,87 @@ function ProjectDetail({ project, teams, onChange, onBack, apiKey }) {
     update((prev) => ({ chats: { ...prev.chats, [frameworkKey]: conversation } }));
   };
 
+  const [imageError, setImageError] = useState("");
+  const handleImageChange = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = ""; // allow re-selecting the same file later
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setImageError("That file doesn't look like an image.");
+      return;
+    }
+    try {
+      setImageError("");
+      const dataUrl = await readAndResizeImage(file, 900);
+      update({ image: dataUrl });
+    } catch (err) {
+      setImageError(err.message || "Couldn't process that image.");
+    }
+  };
+
   const teamOptions = teams.includes(project.team) ? teams : [project.team, ...teams];
 
   return (
-    <div className="detail">
-      <div className="detail__rail">
-        <div><h1>Project workbench</h1>
+    <div>
+      {project.image && (
+        <div className="detail-banner" style={{ backgroundImage: `url(${project.image})` }} />
+      )}
+      <div className="detail">
+        <div className="detail__rail">
+          <button className="btn btn--ghost" onClick={onBack}>
+            <ChevronLeft size={16} /> All projects
+          </button>
+
+          <input
+            className="detail__name"
+            value={project.name}
+            onChange={(e) => update({ name: e.target.value })}
+          />
+
+          <div className="rail-image-field">
+            <label className="rail-label">Header image</label>
+            {project.image ? (
+              <div className="rail-image">
+                <img src={project.image} alt="" />
+                <div className="rail-image__actions">
+                  <label className="btn btn--small">
+                    Change
+                    <input type="file" accept="image/*" hidden onChange={handleImageChange} />
+                  </label>
+                  <button className="btn btn--small btn--ghost" type="button" onClick={() => update({ image: "" })}>
+                    Remove
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <label className="btn btn--small rail-image-field__upload">
+                <Plus size={12} /> Add image
+                <input type="file" accept="image/*" hidden onChange={handleImageChange} />
+              </label>
+            )}
+            {imageError && <div className="rail-image-field__error">{imageError}</div>}
           </div>
-        <button className="btn btn--ghost" onClick={onBack}>
-          <ChevronLeft size={16} /> All projects
-        </button>
 
-        <input
-          className="detail__name"
-          value={project.name}
-          onChange={(e) => update({ name: e.target.value })}
-        />
+          <div className="rail-row">
+            <label className="rail-label">Team</label>
+            <Select value={project.team} onChange={(v) => update({ team: v })} options={teamOptions} />
+          </div>
+          <div className="rail-row">
+            <label className="rail-label">Status</label>
+            <Select value={project.status} onChange={(v) => update({ status: v })} options={PROJECT_STATUSES} />
+          </div>
+          <div className="rail-row">
+            <label className="rail-label">Size</label>
+            <Select value={project.size} onChange={(v) => update({ size: v })} options={SIZES} />
+          </div>
+          <div className="rail-row">
+            <label className="rail-label">Priority</label>
+            <PriorityDots value={project.priority} onChange={(v) => update({ priority: v })} />
+          </div>
 
-        <div className="rail-row">
-          <label className="rail-label">Team</label>
-          <Select value={project.team} onChange={(v) => update({ team: v })} options={teamOptions} />
-        </div>
-        <div className="rail-row">
-          <label className="rail-label">Status</label>
-          <Select value={project.status} onChange={(v) => update({ status: v })} options={PROJECT_STATUSES} />
-        </div>
-        <div className="rail-row">
-          <label className="rail-label">Size</label>
-          <Select value={project.size} onChange={(v) => update({ size: v })} options={SIZES} />
-        </div>
-        <div className="rail-row">
-          <label className="rail-label">Priority</label>
-          <PriorityDots value={project.priority} onChange={(v) => update({ priority: v })} />
-        </div>
-
-        <div className="rail-gate">
-          <div className="rail-label">Gate progress</div>
-          <GateTrack project={project} size="rail" />
+          <div className="rail-gate">
+            <div className="rail-label">Gate progress</div>
+            <GateTrack project={project} size="rail" />
         </div>
       </div>
 
@@ -1252,6 +1361,7 @@ function ProjectDetail({ project, teams, onChange, onBack, apiKey }) {
           <ChecklistTab checklist={project.checklist} onChange={(c) => update({ checklist: c })} />
         )}
       </div>
+    </div>
     </div>
   );
 }
