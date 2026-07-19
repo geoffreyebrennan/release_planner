@@ -32,7 +32,7 @@
 .app {
   background: var(--canvas);
   color: var(--ink);
-  font-family: 'Noto Sans', system-ui, sans-serif;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
   min-height: 100%;
   padding: 32px clamp(16px, 4vw, 56px) 64px;
   transition: background-color .2s ease, color .2s ease;
