@@ -7,7 +7,7 @@
   --ink-hover: #223A34;
   --ink-faint: #6B7B78;
   --hairline: #CDD6D1;
-  --teal: #2F7A63;
+  --teal: #658E41;
   --teal-10: rgba(47,122,99,0.12);
   --brass: #B8863A;
   --brass-10: rgba(184,134,58,0.14);
@@ -16,13 +16,13 @@
   --sand: #EFE9DC;
 }
 .app[data-theme="dark"] {
-  --canvas: #10171A;
-  --surface: #1A2327;
+  --canvas: #12203E;
+  --surface: #2C3650;
   --ink: #E7EFEC;
   --ink-hover: #C9DBD4;
   --ink-faint: #86988F;
-  --hairline: #2C3A38;
-  --teal: #4FBF9A;
+  --hairline: #56617C;
+  --teal: #8eb967;
   --teal-10: rgba(79,191,154,0.16);
   --brass: #D9A860;
   --brass-10: rgba(217,168,96,0.16);
@@ -112,7 +112,7 @@ h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
 .btn:active { transform: translateY(1px); }
 .btn--primary { background: var(--ink); color: var(--surface); border-color: var(--ink); }
 .btn--primary:hover { background: var(--ink-hover); border-color: var(--ink-hover); }
-.btn--ghost { background: transparent; border-color: transparent; padding:0 4px; color: var(--ink-faint); }
+.btn--ghost { background: transparent; border-color: transparent; color: var(--ink-faint); }
 .btn--ghost:hover { color: var(--ink); }
 .btn--small { font-size: 12px; padding: 6px 10px; }
 .btn--danger { background: var(--brick); color: var(--surface); border-color: var(--brick); }
