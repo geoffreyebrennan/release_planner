@@ -49,7 +49,6 @@ h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 11px;
   letter-spacing: 0.14em;
-  text-transform: uppercase;
   color: var(--teal);
   margin-bottom: 6px;
 }
@@ -202,7 +201,7 @@ h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
 .gate-seg { flex: 1; position: relative; }
 .gate-seg__label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase;
+  font-size: 9px; letter-spacing: 0.06em; 
   color: var(--ink-faint); margin-bottom: 4px;
 }
 .gate-track--compact .gate-seg__label { display: none; }
@@ -267,7 +266,7 @@ h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
 .rail-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .rail-label {
   font-family: 'IBM Plex Mono', monospace; font-size: 10px;
-  text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-faint);
+ letter-spacing: 0.08em; color: var(--ink-faint);
 }
 .rail-gate { border-top: 1px solid var(--hairline); padding-top: 14px; margin-top: 4px; }
 
