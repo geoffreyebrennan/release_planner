@@ -471,14 +471,14 @@ const FRAMEWORK_PROMPTS = {
     intro: "Answer a few questions and Claude will draft the brief fields for you.",
     system: `You are a sharp, friendly product management coach helping someone fill out a one-page Project Brief before they start building. The brief covers: what a winning deliverable looks like to a customer, the problem being solved, how it fits company strategy, whether it ties to a theme, why it matters, why now, success metrics, constraints, what's already known, and what still needs to be answered.
 
-Ask ONE focused question at a time, in plain conversational language, building on what they've already told you rather than repeating yourself. Push gently for specifics when an answer is vague (e.g. push "improve engagement" toward a number or a concrete behavior change). After you've covered the key facets, tell them they can hit "Synthesize into fields" whenever they're ready, and offer to keep going if they want to add more detail. Keep responses short, a few sentences at most.`,
+Ask ONE focused question at a time, in plain conversational language, building on what they've already told you rather than repeating yourself. Push gently for specifics when an answer is vague (E.g., push "improve engagement" toward a number or a concrete behavior change). After you've covered the key facets, tell them they can hit "Synthesize into fields" whenever they're ready, and offer to keep going if they want to add more detail. Keep responses short, a few sentences at most.`,
     extractionSystem: `You extract structured data from a product planning conversation. Given the conversation so far, output ONLY a single valid JSON object with exactly these string keys: winningDeliverable, problemStatement, strategyFit, themeTie, whyImportant, whyNow, successMetrics, constraints, whatWeKnow, whatWeNeedToAnswer. Write each value as a concise, well-formed sentence or two in the user's voice, based only on what was actually discussed. Use an empty string for anything not yet discussed. Do not include markdown formatting, code fences, or any text outside the JSON object.`,
     extractionInstruction: "Please synthesize our conversation so far into the JSON structure you were given.",
   },
   FiveWhys: {
     label: "5 Whys",
     intro: "Talk through the customer's real motivation and Claude will build the whys chain.",
-    system: `You are a thoughtful product discovery coach running a "5 Whys" exercise to find the emotional root of a customer problem. Start by asking what the initial question or behavior is (e.g. "why does a customer do X"), then keep asking "why" based on their previous answer, one question at a time, drilling past the surface-level reason toward the real emotional core. After roughly five whys, help them articulate a root cause and an opportunity for how the experience could be enhanced. Keep each message short and conversational.`,
+    system: `You are a thoughtful product discovery coach running a "5 Whys" exercise to find the emotional root of a customer problem. Start by asking what the initial question or behavior is (E.g., "why does a customer do X"), then keep asking "why" based on their previous answer, one question at a time, drilling past the surface-level reason toward the real emotional core. After roughly five whys, help them articulate a root cause and an opportunity for how the experience could be enhanced. Keep each message short and conversational.`,
     extractionSystem: `You extract structured data from a "5 Whys" discovery conversation. Given the conversation so far, output ONLY a single valid JSON object with exactly these keys: problem (string, the initial question), whys (an array of up to 5 strings, one per why in order), rootCause (string), opportunity (string). Use what was actually discussed; use empty strings or a shorter array if fewer than 5 whys were covered. Do not include markdown formatting, code fences, or any text outside the JSON object.`,
     extractionInstruction: "Please synthesize our conversation so far into the JSON structure you were given.",
   },
@@ -1458,7 +1458,7 @@ function DiscoveryTab({
             <Field label="Initial question">
               <TextArea
                 rows={2}
-                placeholder="e.g. Why do you drink coffee in the morning?"
+                placeholder="E.g., Why do you drink coffee in the morning?"
                 value={fiveWhys.problem}
                 onChange={(e) => onFiveWhys({ ...fiveWhys, problem: e.target.value })}
               />
@@ -1533,7 +1533,7 @@ function NorthStarTab({ value, onChange, chat, onChatChange, onSynthesize, apiKe
             onSynthesize={onSynthesize}
             apiKey={apiKey}
           />
-          <TextArea rows={8} value={value} onChange={(e) => onChange(e.target.value)} />
+          <TextArea rows={8} placeholder="E.g., 5X more monthly purchases per customer" value={value} onChange={(e) => onChange(e.target.value)} />
         </div>
       </section>
     </div>
