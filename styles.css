@@ -44,7 +44,7 @@
   outline-offset: 2px;
 }
 h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
-display:flex; align-content: center; }
+ }
 .eyebrow {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 11px;
@@ -57,7 +57,7 @@ display:flex; align-content: center; }
 /* ---------- dashboard ---------- */
 .dash__header {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 24px;
   border-bottom: 1px solid var(--hairline);
