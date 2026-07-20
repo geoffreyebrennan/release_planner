@@ -16,12 +16,12 @@
   --sand: #EFE9DC;
 }
 .app[data-theme="dark"] {
-  --canvas: #12203E;
-  --surface: #2C3650;
+  --canvas: #081123;
+  --surface: #12203E;
   --ink: #E7EFEC;
   --ink-hover: #C9DBD4;
   --ink-faint: #86988F;
-  --hairline: #56617C;
+  --hairline: #2C3650;
   --teal: #8eb967;
   --teal-10: rgba(79,191,154,0.16);
   --brass: #D9A860;
@@ -190,7 +190,7 @@ h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
 
 .priority-dots { display: flex; gap: 3px; }
 .priority-dot {
-  width: 7px; height: 7px; border-radius: 50%;
+  width: 9px; height: 9px; border-radius: 50%;
   border: 1px solid var(--ink-faint); background: transparent;
   padding: 0; cursor: pointer;
 }
