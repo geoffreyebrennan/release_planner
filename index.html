@@ -1251,11 +1251,12 @@ function ProjectDetail({ project, teams, onChange, onBack, apiKey }) {
       )}
       <div className="detail">
         <div className="detail__rail">
+          <span className="detail__rail-header">
           <img src="images/Project_Workbench-small.png" width={60} height={60} className="detail__rail-logo" />
           <button className="btn btn--ghost" onClick={onBack}>
             <ChevronLeft size={16} /> All projects
           </button>
-
+        </span>
           <input
             className="detail__name"
             value={project.name}

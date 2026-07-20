@@ -241,6 +241,9 @@ h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
   display: flex; flex-direction: column; gap: 14px;
   height: 100%;
 }
+.detail__rail.header{
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
 .detail__name {
   font-family: 'Space Grotesk', sans-serif;
   font-size: 20px; font-weight: 600; color: var(--ink);
