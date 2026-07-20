@@ -51,7 +51,7 @@ function Settings(props) { return <Icon {...props}><circle cx="12" cy="12" r="3"
 
 const DEFAULT_TEAMS = [
   "None", "Unassigned", "Architecture", "BI/Reporting", "Internal Development",
-  "Clinical", "Finance", "Integration", "Insurance", "Patient", "Slams", "Curve Capture",
+  "Clinical", "Finance", "Integration", "Insurance", "Patient", "Slams", "Imaging",
 ];
 
 const PROJECT_STATUSES = [
@@ -60,7 +60,7 @@ const PROJECT_STATUSES = [
 
 const SIZES = ["S", "M", "L", "XL", "XXL"];
 
-const TASK_STATUSES = ["Not started", "In Progress", "In Review", "N/A", "Done"];
+const TASK_STATUSES = ["Not started", "In Progress","Holding", "In Review", "N/A", "Done"];
 
 const TASK_STATUS_STYLE = {
   "Not started": { fg: "var(--ink-faint)", bg: "transparent", border: "var(--hairline)" },
@@ -246,7 +246,7 @@ function demoProjects() {
   const curveExport = {
     id: uid(),
     name: "Example: CGM Curve Export API",
-    team: "Curve Capture",
+    team: "Imaging",
     status: "In Beta",
     size: "L",
     priority: 4,
@@ -1251,11 +1251,12 @@ function ProjectDetail({ project, teams, onChange, onBack, apiKey }) {
       )}
       <div className="detail">
         <div className="detail__rail">
+          <div style="display: flex; align-items: center; gap: 8px;">
           <img src="images/Project_Workbench-small.png" width={60} height={60} className="detail__rail-logo" />
           <button className="btn btn--ghost" onClick={onBack}>
             <ChevronLeft size={16} /> All projects
           </button>
-
+        </div>
           <input
             className="detail__name"
             value={project.name}
