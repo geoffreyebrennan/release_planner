@@ -262,8 +262,8 @@ h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
 .gate-track { display: flex; gap: 6px; }
 .gate-seg { flex: 1; position: relative; }
 .gate-seg__label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px; letter-spacing: 0.06em; 
+  font-family: 'Noto Sans Mono', monospace;
+  font-size: 11px; letter-spacing: 0.06em; 
   color: var(--ink-faint); margin-bottom: 4px;
 }
 .gate-track--compact .gate-seg__label { display: none; }
@@ -328,10 +328,10 @@ h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
 }
 .rail-image__actions label { cursor: pointer; }
 
-.rail-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.rail-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .rail-label {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
- letter-spacing: 0.08em; color: var(--ink-faint);
+  font-family: 'Noto Sans Mono', monospace; font-size: 11px;
+ letter-spacing: 0.08em; color: var(--ink-faint); margin-bottom: 12px;
 }
 .rail-gate { border-top: 1px solid var(--hairline); padding-top: 14px; margin-top: 4px; }
 
