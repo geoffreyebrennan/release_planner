@@ -100,8 +100,8 @@ h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
 .btn {
   display: inline-flex; align-items: center; gap: 6px;
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 13px; font-weight: 500;
-  padding: 9px 14px; border-radius: 8px;
+  font-size: 14px; font-weight: 500;
+  padding: 10px 16px; border-radius: 8px;
   border: 1px solid var(--hairline);
   background: var(--surface); color: var(--ink);
   cursor: pointer; white-space: nowrap;
@@ -109,8 +109,8 @@ h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
 }
 .btn:hover { border-color: var(--ink-faint); }
 .btn:active { transform: translateY(1px); }
-.btn--primary { background: var(--ink); color: var(--surface); border-color: var(--ink); }
-.btn--primary:hover { background: var(--ink-hover); border-color: var(--ink-hover); }
+.btn--primary { background: var(--teal); color: var(--surface); border-color: var(--ink); }
+.btn--primary:hover { background: var(--teal); opacity: 0.7; border-color: var(--ink-hover); }
 .btn--ghost { background: transparent; border-color: transparent; color: var(--ink-faint); }
 .btn--ghost:hover { color: var(--ink); }
 .btn--small { font-size: 12px; padding: 6px 10px; }
