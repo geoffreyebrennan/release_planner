@@ -1463,31 +1463,21 @@ function DiscoveryTab({
                 onChange={(e) => onFiveWhys({ ...fiveWhys, problem: e.target.value })}
               />
             </Field>
-            const WHY_PLACEHOLDERS = [
+            const whyPlaceholders = [
   "What happened?",
   "Why did this happen?",
   "Why was that possible?",
   "What underlying process failed?",
   "What is the root cause?"
 ];
-
-function FiveWhys() {
-  return (
-    <div className="whys-chain">
-      {fiveWhys.whys.map((w, i) => (
-        <div className="whys-chain__row" key={i}>
-          <div className="whys-chain__index">{i + 1}</div>
-          <TextArea
-            rows={1}
-            placeholder={WHY_PLACEHOLDERS[i]}
-            value={w}
-            onChange={(e) => setWhy(i, e.target.value)}
-          />
-        </div>
-      ))}
-    </div>
-  );
-}
+            <div className="whys-chain">
+              {fiveWhys.whys.map((w, i) => (
+                <div className="whys-chain__row" key={i}>
+                  <div className="whys-chain__index">{i + 1}</div>
+                  <TextArea rows={1} placeholder=placeholder={whyPlaceholders[i]} value={w} onChange={(e) => setWhy(i, e.target.value)} />
+                </div>
+              ))}
+            </div>
             <div className="two-col">
               <Field label="Root cause">
                 <TextArea value={fiveWhys.rootCause} onChange={(e) => onFiveWhys({ ...fiveWhys, rootCause: e.target.value })} />
