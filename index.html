@@ -1596,7 +1596,7 @@ function DiscoveryTab({
       <section className="subsection">
         <div className="subsection__title">Jobs to be done</div>
         <div className="subsection__hint">
-          As a customer, when I want to, so I can, making me feel, and making others see I'm.
+          As a customer, when I want to, so I can, making me feel, and making others see I'm...
         </div>
         <div className="split-panel">
           <AgentChatPanel
@@ -1624,6 +1624,36 @@ function DiscoveryTab({
           </div>
         </div>
       </section>
+
+      <section className="subsection">
+        <div className="subsection__title">Job statements</div>
+        <div className="subsection__hint">
+          Action + Verb + Context
+        </div>
+        <div className="split-panel">
+          <AgentChatPanel
+            frameworkKey="Jtbd"
+            conversation={jtbdChat}
+            onConversationChange={onJtbdChatChange}
+            onSynthesize={onJtbdSynthesize}
+            apiKey={apiKey}
+          />
+          <div>
+            {jtbd.map((j) => (
+              <div className="jtbd-row" key={j.id}>
+                <button className="jtbd-row__remove" onClick={() => removeJtbd(j.id)}><X size={14} /></button>
+                <div className="jtbd-grid">
+                  <Field label="Verb"><TextArea rows={2} placeholder="E.g., Transportation" value={j.situation} onChange={(e) => updateJtbd(j.id, "verb", e.target.value)} /></Field>
+                  
+                </div>
+                <JtbdPreview job={j} />
+              </div>
+            ))}
+            <button className="btn" onClick={addJtbd}><Plus size={14} /> Add job to be done</button>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 }
