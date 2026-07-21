@@ -28,7 +28,7 @@
   --brass-10: rgba(217,168,96,0.16);
   --brick: #E08267;
   --brick-hover: #C96B52;
-  --sand: #262A20;
+  --sand: #446627;
 }
 * { box-sizing: border-box; }
 .app {
@@ -358,6 +358,7 @@ h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
 }
 .brief-toolbar__hint { font-size: 12.5px; color: var(--ink-faint); max-width: 46ch; }
 .brief-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; padding:6px;}
+.brief-grid>div { padding:6px;}
 .brief-grid>div:nth-child(9) { background-color: var(--teal-10); border-radius: 6px; }
 .brief-grid>div:nth-child(10) { background-color: var(--teal-10); border-radius: 6px; }
 @media (max-width: 700px) { .brief-grid { grid-template-columns: 1fr; } }
