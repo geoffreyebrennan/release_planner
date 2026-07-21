@@ -43,6 +43,8 @@ function Download(props) { return <Icon {...props}><path d="M21 15v4a2 2 0 0 1-2
 function Sparkles(props) { return <Icon {...props}><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8" /></Icon>; }
 function KeyRound(props) { return <Icon {...props}><circle cx="8" cy="15" r="4" /><path d="M10.5 12.5 19 4M17 6l2 2M14 9l2 2" /></Icon>; }
 function Settings(props) { return <Icon {...props}><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></Icon>; }
+function LayoutGrid(props) { return <Icon {...props}><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /></Icon>; }
+function List(props) { return <Icon {...props}><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></Icon>; }
 
 
 /* ---------------------------------------------------------
@@ -1050,7 +1052,13 @@ function Dashboard({ projects, teams, onOpen, onCreate, onDelete, onAddTeam, onR
   const [creating, setCreating] = useState(false);
   const [managingTeams, setManagingTeams] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState("grid");
   const pendingDeleteProject = projects.find((p) => p.id === pendingDeleteId);
+
+  const filteredProjects = projects.filter((p) =>
+    p.name.toLowerCase().includes(searchQuery.trim().toLowerCase())
+  );
 
   return (
     <div className="dash">
@@ -1114,41 +1122,117 @@ function Dashboard({ projects, teams, onOpen, onCreate, onDelete, onAddTeam, onR
         </div>
       )}
 
-      <div className="card-grid">
-        {projects.map((p) => (
-          <div className="pcard" key={p.id} onClick={() => onOpen(p.id)} tabIndex={0}
-               onKeyDown={(e) => { if (e.key === "Enter") onOpen(p.id); }}>
+      {projects.length > 0 && (
+        <div className="dash__toolbar">
+          <input
+            className="dash__search"
+            placeholder="Search projects…"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <div className="view-toggle" role="group" aria-label="View mode">
             <button
-              className="pcard__delete"
-              title="Delete project"
-              onClick={(e) => { e.stopPropagation(); setPendingDeleteId(p.id); }}
+              type="button"
+              className={`view-toggle__btn${viewMode === "grid" ? " view-toggle__btn--active" : ""}`}
+              onClick={() => setViewMode("grid")}
+              aria-pressed={viewMode === "grid"}
             >
-              <Trash2 size={14} />
+              <LayoutGrid size={14} /> Cards
             </button>
-            {p.image && (
-              <div className="pcard__image" style={{ backgroundImage: `url(${p.image})` }} />
-            )}
-            <div className="pcard__body">
-              <div className="pcard__top">
-                <div className="pcard__name">{p.name}</div>
-                <div className="pcard__meta">
-                  <span className="chip">{p.team}</span>
-                  <span className="chip chip--mono">{p.size}</span>
+            <button
+              type="button"
+              className={`view-toggle__btn${viewMode === "detail" ? " view-toggle__btn--active" : ""}`}
+              onClick={() => setViewMode("detail")}
+              aria-pressed={viewMode === "detail"}
+            >
+              <List size={14} /> Detail
+            </button>
+          </div>
+        </div>
+      )}
+
+      {projects.length > 0 && searchQuery.trim() && filteredProjects.length === 0 && (
+        <div className="empty empty--search">
+          <div className="empty__title">No projects match &ldquo;{searchQuery}&rdquo;.</div>
+        </div>
+      )}
+
+      {filteredProjects.length > 0 && viewMode === "grid" && (
+        <div className="card-grid">
+          {filteredProjects.map((p) => (
+            <div className="pcard" key={p.id} onClick={() => onOpen(p.id)} tabIndex={0}
+                 onKeyDown={(e) => { if (e.key === "Enter") onOpen(p.id); }}>
+              <button
+                className="pcard__delete"
+                title="Delete project"
+                onClick={(e) => { e.stopPropagation(); setPendingDeleteId(p.id); }}
+              >
+                <Trash2 size={14} />
+              </button>
+              {p.image && (
+                <div className="pcard__image" style={{ backgroundImage: `url(${p.image})` }} />
+              )}
+              <div className="pcard__body">
+                <div className="pcard__top">
+                  <div className="pcard__name">{p.name}</div>
+                  <div className="pcard__meta">
+                    <span className="chip">{p.team}</span>
+                    <span className="chip chip--mono">{p.size}</span>
+                  </div>
+                </div>
+                <div className="pcard__status">
+                  <span className="status-pill">{p.status}</span>
+                  <PriorityDots value={p.priority} />
+                </div>
+                <GateTrack project={p} size="compact" />
+                <div className="pcard__foot">
+                  <span>{Math.round(overallProgress(p) * 100)}% complete</span>
+                  <span>{relativeTime(p.updatedAt)}</span>
                 </div>
               </div>
-              <div className="pcard__status">
-                <span className="status-pill">{p.status}</span>
-                <PriorityDots value={p.priority} />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {filteredProjects.length > 0 && viewMode === "detail" && (
+        <div className="project-list">
+          {filteredProjects.map((p) => (
+            <div
+              className="project-row"
+              key={p.id}
+              onClick={() => onOpen(p.id)}
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === "Enter") onOpen(p.id); }}
+            >
+              {p.image && (
+                <div className="project-row__thumb" style={{ backgroundImage: `url(${p.image})` }} />
+              )}
+              <div className="project-row__main">
+                <div className="project-row__name">{p.name}</div>
+                <div className="project-row__meta">
+                  <span className="chip">{p.team}</span>
+                  <span className="chip chip--mono">{p.size}</span>
+                  <span className="status-pill">{p.status}</span>
+                </div>
+                <GateTrack project={p} size="compact" />
               </div>
-              <GateTrack project={p} size="compact" />
-              <div className="pcard__foot">
+              <div className="project-row__progress">
                 <span>{Math.round(overallProgress(p) * 100)}% complete</span>
                 <span>{relativeTime(p.updatedAt)}</span>
+                <PriorityDots value={p.priority} />
               </div>
+              <button
+                className="project-row__delete"
+                title="Delete project"
+                onClick={(e) => { e.stopPropagation(); setPendingDeleteId(p.id); }}
+              >
+                <Trash2 size={14} />
+              </button>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       <ConfirmDialog
         open={!!pendingDeleteId}
