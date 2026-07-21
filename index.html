@@ -1467,7 +1467,7 @@ function DiscoveryTab({
               {fiveWhys.whys.map((w, i) => (
                 <div className="whys-chain__row" key={i}>
                   <div className="whys-chain__index">{i + 1}</div>
-                  <TextArea rows={1} placeholder="Why?" value={w} onChange={(e) => setWhy(i, e.target.value)} />
+                  <TextArea rows={1} placeholder={`Placeholder ${i + 1}`} value={w} onChange={(e) => setWhy(i, e.target.value)} />
                 </div>
               ))}
             </div>

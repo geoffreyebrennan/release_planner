@@ -451,7 +451,7 @@ h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
 .whys-chain__index {
   font-family: 'IBM Plex Mono', monospace; font-size: 16px; color: var(--brass);
   border: 2px solid var(--brass); border-radius: 50%;
-  width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
   flex-shrink: 0; margin-top: 4px;
 }
 
