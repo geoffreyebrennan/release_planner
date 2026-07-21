@@ -455,16 +455,16 @@ h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
   flex-shrink: 0; margin-top: 4px;
 }
 .whys-chain__index:nth-child(2) {
-  marin-left:12px;  
+  margin-left:12px;  
 }
 .whys-chain__index:nth-child(3) {
-  marin-left:24px;  
+  margin-left:24px;  
 }
 .whys-chain__index:nth-child(4) {
-  marin-left:36px;  
+  margin-left:36px;  
 }
 .whys-chain__index:nth-child(5) {
-  marin-left:48px;  
+  margin-left:48px;  
 }
 .whys-chain__row .ta { flex: 1; }
 
