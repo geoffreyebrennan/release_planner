@@ -46,7 +46,7 @@
 h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
  }
 .eyebrow {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'Noto Sans', monospace;
   font-size: 11px;
   letter-spacing: 0.14em;
   color: var(--teal);
@@ -186,7 +186,7 @@ h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
 .project-row__progress {
   display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px; color: var(--ink-faint); flex-shrink: 0;
+  font-size: 12px; color: var(--ink-faint); flex-shrink: 0;
 }
 .project-row__delete {
   flex-shrink: 0; background: transparent; border: none;
