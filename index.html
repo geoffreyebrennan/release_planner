@@ -1439,6 +1439,14 @@ function DiscoveryTab({
   };
   const removeJtbd = (id) => onJtbd(jtbd.filter((j) => j.id !== id));
 
+  const WHY_PLACEHOLDERS = [
+  "Describe the problem...",
+  "Why did that happen?",
+  "Why did that happen?",
+  "Why did that happen?",
+  "What is the root cause?"
+];
+
   return (
     <div className="panel">
       <section className="subsection">
@@ -1467,7 +1475,7 @@ function DiscoveryTab({
               {fiveWhys.whys.map((w, i) => (
                 <div className="whys-chain__row" key={i}>
                   <div className="whys-chain__index">{i + 1}</div>
-                  <TextArea rows={1} placeholder={`Placeholder ${i + 1}`} value={w} onChange={(e) => setWhy(i, e.target.value)} />
+                  <TextArea rows={1} placeholder={WHY_PLACEHOLDERS[i]} value={w} onChange={(e) => setWhy(i, e.target.value)} />
                 </div>
               ))}
             </div>
