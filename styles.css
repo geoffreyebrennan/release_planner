@@ -347,7 +347,7 @@ h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
   padding: 10px 14px; background: var(--sand); margin-bottom: 20px;
 }
 .api-key-bar__status { font-size: 12.5px; font-weight: 500; color: var(--ink); }
-.api-key-bar__label { font-size: 12.5px; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+.api-key-bar__label { font-size: 12.5px; font-weight: 400; display: flex; align-items: center; gap: 5px; }
 .api-key-bar__input {
   flex: 1; min-width: 200px; max-width: 320px;
   padding: 6px 10px; border-radius: 6px; border: 1px solid var(--hairline);
