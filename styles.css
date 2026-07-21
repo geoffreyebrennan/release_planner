@@ -561,6 +561,11 @@ h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
   display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
 }
 @media (max-width: 900px) { .jtbd-grid { grid-template-columns: 1fr 1fr; } }
+.jtbd-preview {
+  margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--hairline);
+  font-size: 13px; line-height: 1.55; color: var(--ink);
+}
+.jtbd-preview__placeholder { font-style: italic; color: var(--ink-faint); }
 
 .phase-block { border: 1px solid var(--hairline); border-radius: 12px; padding: 18px; background: var(--surface); margin-bottom: 4px; }
 .phase-block__head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }

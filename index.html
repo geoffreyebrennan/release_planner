@@ -728,6 +728,23 @@ function TextArea(props) {
   return <textarea className="ta" rows={3} {...props} />;
 }
 
+function JtbdPreview({ job }) {
+  const seg = (value, placeholder) =>
+    value.trim() ? (
+      <span>{value.trim()}</span>
+    ) : (
+      <span className="jtbd-preview__placeholder">[{placeholder}]</span>
+    );
+
+  return (
+    <p className="jtbd-preview">
+      As a customer, when {seg(job.situation, "situation")} I want to {seg(job.motivation, "motivation")}, so I can{" "}
+      {seg(job.outcome, "outcome")}, making me feel {seg(job.emotionalJob, "emotional job")}, and making others see I'm{" "}
+      {seg(job.socialJob, "social job")}.
+    </p>
+  );
+}
+
 function Select({ value, onChange, options }) {
   return (
     <select className="sel" value={value} onChange={(e) => onChange(e.target.value)}>
@@ -1600,6 +1617,7 @@ function DiscoveryTab({
                   <Field label="Emotional job"><TextArea rows={4} placeholder="Making me feel…" value={j.emotionalJob} onChange={(e) => updateJtbd(j.id, "emotionalJob", e.target.value)} /><div class="five-whys__label">What will the emotional state of the customer be when the job is complete?</div></Field>
                   <Field label="Social job"><TextArea rows={4} placeholder="Others see I'm…" value={j.socialJob} onChange={(e) => updateJtbd(j.id, "socialJob", e.target.value)} /><div class="five-whys__label">How will the customer look to others (patients) when they solve this situation?</div></Field>
                 </div>
+                <JtbdPreview job={j} />
               </div>
             ))}
             <button className="btn" onClick={addJtbd}><Plus size={14} /> Add job to be done</button>
