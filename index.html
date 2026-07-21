@@ -60,11 +60,12 @@ const PROJECT_STATUSES = [
 
 const SIZES = ["S", "M", "L", "XL", "XXL"];
 
-const TASK_STATUSES = ["Not started", "In Progress", "In Review", "N/A", "Done"];
+const TASK_STATUSES = ["Not started", "In Progress", "On hold", "In Review", "N/A", "Done"];
 
 const TASK_STATUS_STYLE = {
   "Not started": { fg: "var(--ink-faint)", bg: "transparent", border: "var(--hairline)" },
   "In Progress": { fg: "var(--brass)", bg: "var(--brass-10)", border: "var(--brass)" },
+  "On hold": { fg: "var(--ink-faint)", bg: "transparent", border: "var(--hairline)" },
   "In Review": { fg: "var(--ink)", bg: "var(--sand)", border: "var(--ink-faint)" },
   "N/A": { fg: "var(--ink-faint)", bg: "transparent", border: "var(--hairline)" },
   "Done": { fg: "var(--teal)", bg: "var(--teal-10)", border: "var(--teal)" },
