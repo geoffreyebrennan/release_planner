@@ -448,6 +448,13 @@ h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
 
 .whys-chain { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
 .whys-chain__row { display: flex; align-items: flex-start; gap: 10px; }
+.whys-chain__index {
+  font-family: 'IBM Plex Mono', monospace; font-size: 16px; color: var(--brass);
+  border: 2px solid var(--brass); border-radius: 50%;
+  width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 4px;
+}
+
 .whys-chain > .whys-chain__row:nth-of-type(2) {
     margin-left: 12px;
 }
