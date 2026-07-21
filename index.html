@@ -1480,7 +1480,7 @@ function DiscoveryTab({
               ))}
             </div>
             <div className="two-col">
-              <Field label="Root cause">
+              <Field label="Root cause" hint="What is <em>the</em> core underlying problem?">
                 <TextArea value={fiveWhys.rootCause} onChange={(e) => onFiveWhys({ ...fiveWhys, rootCause: e.target.value })} />
               </Field>
               <Field label="Opportunity" hint="How can the experience be enhanced?">
