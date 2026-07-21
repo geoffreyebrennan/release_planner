@@ -450,9 +450,21 @@ h1, h2, .eyebrow { font-family: 'Space Grotesk', sans-serif;
 .whys-chain__row { display: flex; align-items: flex-start; gap: 10px; }
 .whys-chain__index {
   font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--brass);
-  border: 1px solid var(--brass); border-radius: 50%;
+  border: 2px solid var(--brass); border-radius: 50%;
   width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
   flex-shrink: 0; margin-top: 4px;
+}
+.whys-chain__index:nth-child(2) {
+  marin-left:12px;  
+}
+.whys-chain__index:nth-child(3) {
+  marin-left:24px;  
+}
+.whys-chain__index:nth-child(4) {
+  marin-left:36px;  
+}
+.whys-chain__index:nth-child(5) {
+  marin-left:48px;  
 }
 .whys-chain__row .ta { flex: 1; }
 
