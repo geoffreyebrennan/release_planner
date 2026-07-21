@@ -1480,7 +1480,7 @@ function DiscoveryTab({
               ))}
             </div>
             <div className="two-col">
-              <Field label="Root cause" hint="What is <em>the</em> core underlying problem?">
+              <Field label="Root cause" hint="What is the core underlying problem?">
                 <TextArea value={fiveWhys.rootCause} onChange={(e) => onFiveWhys({ ...fiveWhys, rootCause: e.target.value })} />
               </Field>
               <Field label="Opportunity" hint="How can the experience be enhanced?">
@@ -1509,11 +1509,11 @@ function DiscoveryTab({
               <div className="jtbd-row" key={j.id}>
                 <button className="jtbd-row__remove" onClick={() => removeJtbd(j.id)}><X size={14} /></button>
                 <div className="jtbd-grid">
-                  <Field label="When…"><TextArea rows={2} value={j.situation} onChange={(e) => updateJtbd(j.id, "situation", e.target.value)} /></Field>
-                  <Field label="I want to…"><TextArea rows={2} value={j.motivation} onChange={(e) => updateJtbd(j.id, "motivation", e.target.value)} /></Field>
-                  <Field label="So I can…"><TextArea rows={2} value={j.outcome} onChange={(e) => updateJtbd(j.id, "outcome", e.target.value)} /></Field>
-                  <Field label="Making me feel…"><TextArea rows={2} value={j.emotionalJob} onChange={(e) => updateJtbd(j.id, "emotionalJob", e.target.value)} /></Field>
-                  <Field label="Others see I'm…"><TextArea rows={2} value={j.socialJob} onChange={(e) => updateJtbd(j.id, "socialJob", e.target.value)} /></Field>
+                  <Field label="Situation"><TextArea rows={3} placeholder="When...value={j.situation} onChange={(e) => updateJtbd(j.id, "situation", e.target.value)} /></Field>
+                  <Field label="I want to…"><TextArea rows={3} value={j.motivation} onChange={(e) => updateJtbd(j.id, "motivation", e.target.value)} /></Field>
+                  <Field label="So I can…"><TextArea rows={3} value={j.outcome} onChange={(e) => updateJtbd(j.id, "outcome", e.target.value)} /></Field>
+                  <Field label="Making me feel…"><TextArea rows={3} value={j.emotionalJob} onChange={(e) => updateJtbd(j.id, "emotionalJob", e.target.value)} /></Field>
+                  <Field label="Others see I'm…"><TextArea rows={3} value={j.socialJob} onChange={(e) => updateJtbd(j.id, "socialJob", e.target.value)} /></Field>
                 </div>
               </div>
             ))}
