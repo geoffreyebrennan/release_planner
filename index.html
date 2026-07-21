@@ -1541,14 +1541,6 @@ function DiscoveryTab({
   };
   const removeJtbd = (id) => onJtbd(jtbd.filter((j) => j.id !== id));
 
-    const addJobStatement = () => {
-    onJobStatement([...JobStatement, { id: uid(), verb: "", verb-object: "", verb-context: "", }]);
-  };
-  const updateJobStatement = (id, key, val) => {
-    onJtbd(jtbd.map((j) => (j.id === id ? { ...j, [key]: val } : j)));
-  };
-  const removeJobStatement = (id) => onJobStatement(JobStatement.filter((j) => j.id !== id));
-
   const WHY_PLACEHOLDERS = [
   "E.g., To feel awake with caffeine",
   "E.g., So I can be mentally prepared for the day?",
@@ -1632,38 +1624,6 @@ function DiscoveryTab({
           </div>
         </div>
       </section>
-
-      <section className="subsection">
-        <div className="subsection__title">Job statements</div>
-        <div className="subsection__hint">
-          Action + Verb + Context
-        </div>
-        <div className="split-panel">
-          <AgentChatPanel
-            frameworkKey="Jtbd"
-            conversation={jtbdChat}
-            onConversationChange={onJtbdChatChange}
-            onSynthesize={onJtbdSynthesize}
-            apiKey={apiKey}
-          />
-          <div>
-            {jtbd.map((j) => (
-              <div className="jtbd-row" key={j.id}>
-                <button className="jtbd-row__remove" onClick={() => removeJtbd(j.id)}><X size={14} /></button>
-                <div className="jtbd-grid">
-                  <Field label="Verb"><TextArea rows={2} placeholder="E.g., Transportation" value={j.situation} onChange={(e) => updateJtbd(j.id, "verb", e.target.value)} /></Field>
-                  <div className="jtbd-grid">
-                  <Field label="Object of the verb"><TextArea rows={2} placeholder="E.g., me and my belongings" value={j.situation} onChange={(e) => updateJtbd(j.id, "verb-object", e.target.value)} /></Field>
-                    <Field label="Context modifier"><TextArea rows={2} placeholder="E.g., via the ground" value={j.situation} onChange={(e) => updateJtbd(j.id, "context-modifier", e.target.value)} /></Field>
-                </div>
-                <JtbdPreview job={j} />
-              </div>
-            ))}
-            <button className="btn" onClick={addJobStatement}><Plus size={14} /> Add job statement</button>
-          </div>
-        </div>
-      </section>
-
     </div>
   );
 }
