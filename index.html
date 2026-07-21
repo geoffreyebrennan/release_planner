@@ -1430,6 +1430,13 @@ function DiscoveryTab({
     whys[i] = val;
     onFiveWhys({ ...fiveWhys, whys });
   };
+   const whyPlaceholders = [
+  "What happened?",
+  "Why did this happen?",
+  "Why was that possible?",
+  "What underlying process failed?",
+  "What is the root cause?"
+];
 
   const addJtbd = () => {
     onJtbd([...jtbd, { id: uid(), situation: "", motivation: "", outcome: "", emotionalJob: "", socialJob: "" }]);
@@ -1463,13 +1470,7 @@ function DiscoveryTab({
                 onChange={(e) => onFiveWhys({ ...fiveWhys, problem: e.target.value })}
               />
             </Field>
-            const whyPlaceholders = [
-  "What happened?",
-  "Why did this happen?",
-  "Why was that possible?",
-  "What underlying process failed?",
-  "What is the root cause?"
-];
+           
             <div className="whys-chain">
               {fiveWhys.whys.map((w, i) => (
                 <div className="whys-chain__row" key={i}>
