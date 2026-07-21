@@ -1509,11 +1509,11 @@ function DiscoveryTab({
               <div className="jtbd-row" key={j.id}>
                 <button className="jtbd-row__remove" onClick={() => removeJtbd(j.id)}><X size={14} /></button>
                 <div className="jtbd-grid">
-                  <Field label="Situation"><TextArea rows={3} placeholder="When..." value={j.situation} onChange={(e) => updateJtbd(j.id, "situation", e.target.value)} /></Field>
-                  <Field label="Motivation"><TextArea rows={3} placeholder="I want to…" value={j.motivation} onChange={(e) => updateJtbd(j.id, "motivation", e.target.value)} /></Field>
-                  <Field label="Outcome"><TextArea rows={3} placeholder="So I can…" value={j.outcome} onChange={(e) => updateJtbd(j.id, "outcome", e.target.value)} /></Field>
-                  <Field label="Emotional job"><TextArea rows={3} placeholder="Making me feel…" value={j.emotionalJob} onChange={(e) => updateJtbd(j.id, "emotionalJob", e.target.value)} /></Field>
-                  <Field label="Social job"><TextArea rows={3} placeholder="Others see I'm…" value={j.socialJob} onChange={(e) => updateJtbd(j.id, "socialJob", e.target.value)} /></Field>
+                  <Field label="Situation"><TextArea rows={4} placeholder="When..." value={j.situation} onChange={(e) => updateJtbd(j.id, "situation", e.target.value)} />What is the situation which triggers a need for a job to be done?</Field>
+                  <Field label="Motivation"><TextArea rows={4} placeholder="I want to…" value={j.motivation} onChange={(e) => updateJtbd(j.id, "motivation", e.target.value)} /></Field>
+                  <Field label="Outcome"><TextArea rows={4} placeholder="So I can…" value={j.outcome} onChange={(e) => updateJtbd(j.id, "outcome", e.target.value)} /></Field>
+                  <Field label="Emotional job"><TextArea rows={4} placeholder="Making me feel…" value={j.emotionalJob} onChange={(e) => updateJtbd(j.id, "emotionalJob", e.target.value)} /></Field>
+                  <Field label="Social job"><TextArea rows={4} placeholder="Others see I'm…" value={j.socialJob} onChange={(e) => updateJtbd(j.id, "socialJob", e.target.value)} /></Field>
                 </div>
               </div>
             ))}
