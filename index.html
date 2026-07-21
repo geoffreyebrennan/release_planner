@@ -1084,7 +1084,7 @@ function Dashboard({ projects, teams, onOpen, onCreate, onDelete, onAddTeam, onR
           <div className="eyebrow">Release Planner</div>
           <h1 className="dash__title"><img src="images/Project_Workbench-small.png" width="140px" height="140px"/>Project workbench</h1>
           <p className="dash__sub">
-            Charter, validate, and ship.
+            Creation tools for product charters, validation, and shipping releases.
           </p>
         </div>
         <div className="dash__header-actions">
@@ -1699,14 +1699,14 @@ function ChecklistTab({ checklist, onChange }) {
                     <div className="task-row__link">
                       <LinkIcon size={12} />
                       <input
-                        placeholder="link"
+                        placeholder="Link"
                         value={item.link}
                         onChange={(e) => updateItem(phase, item.id, { link: e.target.value })}
                       />
                     </div>
                     <input
                       className="task-row__note"
-                      placeholder="note"
+                      placeholder="Notes"
                       value={item.note}
                       onChange={(e) => updateItem(phase, item.id, { note: e.target.value })}
                     />
