@@ -53,7 +53,7 @@ function List(props) { return <Icon {...props}><line x1="8" y1="6" x2="21" y2="6
 
 const DEFAULT_TEAMS = [
   "None", "Unassigned", "Architecture", "BI/Reporting", "Internal Development",
-  "Clinical", "Finance", "Integration", "Insurance", "Patient", "Slams", "Curve Capture",
+  "Clinical", "Finance", "Integration", "Insurance", "Patient", "Slams", "Image Capture",
 ];
 
 const PROJECT_STATUSES = [
@@ -248,16 +248,16 @@ function demoProjects() {
 
   const curveExport = {
     id: uid(),
-    name: "Example: CGM Curve Export API",
-    team: "Curve Capture",
+    name: "Example: Export API",
+    team: "Image Capture",
     status: "In Beta",
     size: "L",
     priority: 4,
     createdAt: now - 34 * day,
     updatedAt: now - 1 * day,
     brief: {
-      winningDeliverable: "A patient can pull their glucose curve history into any care app they already use, without a support ticket.",
-      problemStatement: "Clinics and third-party apps keep asking for raw curve data, and today the only path is a manual export the patient has to request from support.",
+      winningDeliverable: "A patient can pull their glucose history into any care app they already use, without a support ticket.",
+      problemStatement: "Clinics and third-party apps keep asking for raw data, and today the only path is a manual export the patient has to request from support.",
       strategyFit: "Opens the platform to the broader care ecosystem, which is one of this year's stated themes.",
       themeTie: "Yes — Open Platform theme.",
       whyImportant: "Removes a recurring support burden and unblocks two partner integrations that are currently stalled.",
@@ -268,7 +268,7 @@ function demoProjects() {
       whatWeNeedToAnswer: "Whether historical data older than 12 months needs to be included in v1, or can follow later.",
     },
     fiveWhys: {
-      problem: "Why do patients want their curve data outside the app?",
+      problem: "Why do patients want their data outside the app?",
       whys: [
         "Because their care team uses a separate dashboard that doesn't talk to us.",
         "Because that dashboard is where the clinic already reviews all their other vitals.",
@@ -276,20 +276,20 @@ function demoProjects() {
         "Because appointment time is short and the clinician wants one screen, not two.",
         "Because ultimately the patient just wants their care team to have the full picture without extra steps on anyone's part.",
       ],
-      rootCause: "Curve data is trapped in a single app when care actually happens across several systems at once.",
+      rootCause: "Data is trapped in a single app when care actually happens across several systems at once.",
       opportunity: "Let the data follow the patient into whatever system their care team already trusts.",
     },
     jtbd: [
       {
         id: uid(),
         situation: "I'm a clinic administrator setting up a new patient in our EHR",
-        motivation: "pull in their existing curve history automatically",
+        motivation: "pull in their existing history automatically",
         outcome: "I can review trends on day one instead of waiting weeks for new data to accumulate",
         emotionalJob: "confident I'm not missing context on a new patient",
         socialJob: "someone who runs a well-integrated, modern practice",
       },
     ],
-    northStar: "Every patient's curve history is available wherever their care actually happens, with zero manual export requests.",
+    northStar: "Every patient's history is available wherever their care actually happens, with zero manual export requests.",
     checklist: applyChecklistStatuses(freshChecklist(), {
       Charter: ["Done", "Done", "Done", "Done", "Done", "Done", "Done"],
       Beta: ["Done", "Done", "Done", "Done", "Done", "Done", "In Progress", "In Progress", "In Progress", "Not started", "Not started", "Not started", "Not started", "Not started", "Not started", "Not started"],
@@ -298,7 +298,7 @@ function demoProjects() {
     }),
     chats: {
       Brief: [
-        { id: uid(), role: "user", text: "We want to let patients export their glucose curve history to other apps." },
+        { id: uid(), role: "user", text: "We want to let patients export their glucose history to other apps." },
         { id: uid(), role: "assistant", text: "Good starting point. Who actually asks for this today, patients directly, or their clinics? And what do they currently have to do to get that data out?" },
         { id: uid(), role: "user", text: "Mostly clinics, on behalf of patients. Right now it's a manual support ticket." },
       ],
